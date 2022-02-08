@@ -31,7 +31,8 @@ They are using tasks with identical start/goal.
 ----
 ### A-Star
 
-This sample is using Manhattan distance as h-cost.
+This sample is using Manhattan distance as h-cost. <br/>
+
 <a id="search" href="https://github.com/hanmmmmm/robot-path-planning/blob/main/A_star/astar.gif">
     <img src="https://github.com/hanmmmmm/robot-path-planning/blob/main/A_star/astar.gif" alt="BFS showcase gif" title="BFS search" width="500"/>
 </a>
