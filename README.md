@@ -1,6 +1,8 @@
 # Robot Path Planning
 This is a collection of my implementation of robotic 2D path planning algorithms in c++. 
 
+Using only C++ standard libraries for algorithms, and OpenCV for visulization. 
+
 ----
 # Demos
 
@@ -28,6 +30,8 @@ They are using tasks with identical start/goal.
 
 ----
 ### A-Star
+
+This sample is using Manhattan distance as h-cost.
 <a id="search" href="https://github.com/hanmmmmm/robot-path-planning/blob/main/A_star/astar.gif">
     <img src="https://github.com/hanmmmmm/robot-path-planning/blob/main/A_star/astar.gif" alt="BFS showcase gif" title="BFS search" width="500"/>
 </a>
