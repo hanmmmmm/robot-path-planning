@@ -1,8 +1,13 @@
-# robot-path-planning
+# Robot Path Planning
 This is a collection of my implementation of robotic 2D path planning algorithms in c++. 
 
 
 # Demos
+
+Each of the demo contains 5 samples played in sequence.
+
+They are using tasks with identical start/goal. 
+
 
 ## Breadth First Searching
 <a id="search" href="https://github.com/hanmmmmm/robot-path-planning/blob/main/BFS/bfs.gif">
