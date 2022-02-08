@@ -23,8 +23,8 @@ void find_path(int startnode[], int goalnode[], cv::Mat map)
 
 int main()
 {
-
-    std::string img_path = "../map3.png";
+	
+    std::string img_path = "map3.png";
 
     cv::Mat img = setup_map(img_path).clone();
 

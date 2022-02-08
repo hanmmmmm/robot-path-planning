@@ -2,11 +2,24 @@
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
-
+#include <unistd.h>
+#include <iostream>
 
 
 void load_img(std::string img_path, cv::Mat* img , bool* succ){
-    *img = cv::imread(img_path, cv::IMREAD_COLOR);
+    char cwd[256];
+    getcwd(cwd, 256);
+
+    std::string path = cwd;
+    while( path.back() != '/'){
+        path.pop_back();
+    }
+    path += "image/";
+    path += img_path;
+
+    std::cout << path << std::endl;
+
+    *img = cv::imread(path, cv::IMREAD_COLOR);
 
     if(img->empty()){
         *succ = false;
@@ -14,7 +27,6 @@ void load_img(std::string img_path, cv::Mat* img , bool* succ){
     else{
         *succ = true;
     }
-
 }
 
 

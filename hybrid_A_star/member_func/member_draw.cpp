@@ -1,4 +1,4 @@
-#include "astar.h"
+#include "../astar.h"
 #include <opencv2/imgproc.hpp>
 
 void astar::draw_start_goal_on_map()

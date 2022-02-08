@@ -11,7 +11,11 @@ INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
 add_library(utillib utils/img_io.cpp)
 add_library(astarlib astar.cpp)
 
-add_executable(astar_path main.cpp member_print.cpp member_compute.cpp member_draw.cpp)
+add_executable(astar_path 
+main.cpp 
+member_func/member_print.cpp 
+member_func/member_compute.cpp 
+member_func/member_draw.cpp)
 
 
 target_link_libraries(astar_path astarlib utillib ${OpenCV_LIBS} )

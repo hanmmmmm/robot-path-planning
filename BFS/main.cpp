@@ -3,6 +3,8 @@
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/highgui.hpp>
 // #include <stdexcept>
+#include <experimental/filesystem>
+
 
 #include "utils/img_io.h"
 #include "bfs.h"
@@ -23,10 +25,9 @@ void find_path(int startnode[], int goalnode[], cv::Mat map)
 
 int main()
 {
+    std::string image_name = "map3.png";
 
-    std::string img_path = "../map3.png";
-
-    cv::Mat img = setup_map(img_path).clone();
+    cv::Mat img = setup_map(image_name).clone();
 
 
     int startnode[2] = {3, 8};  // start position, {x ,y}
@@ -41,16 +42,16 @@ int main()
     goalnode[1] = 20;  // start position, x
     find_path( startnode , goalnode, img);
 
-    goalnode[0] = 20;  // start position, x
-    goalnode[1] = 30;  // start position, x
-    find_path( startnode , goalnode, img);
+    // goalnode[0] = 20;  // start position, x
+    // goalnode[1] = 30;  // start position, x
+    // find_path( startnode , goalnode, img);
 
-    goalnode[0] = 19;  // start position, x
-    goalnode[1] = 48;  // start position, x
-    find_path( startnode , goalnode, img);
+    // goalnode[0] = 19;  // start position, x
+    // goalnode[1] = 48;  // start position, x
+    // find_path( startnode , goalnode, img);
 
-    goalnode[0] = 47;  // start position, x
-    goalnode[1] = 35;  // start position, x
-    find_path( startnode , goalnode, img);
+    // goalnode[0] = 47;  // start position, x
+    // goalnode[1] = 35;  // start position, x
+    // find_path( startnode , goalnode, img);
 
 }
