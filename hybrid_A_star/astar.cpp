@@ -132,8 +132,8 @@ void astar::explore_one_node(std::array<float, 3> curr_pose, std::array<int, 3> 
                 float nb_a = curr_theta + mm[2]; // angle change in this step
                 nb_a = rectify_angle_rad(nb_a);
 
-                std::array<float, 3> nb_pose = {nb_x, nb_y, nb_a};
-                std::array<int, 3> nb_grid = fine_to_grid(nb_pose, fine_ratio, angle_resolution);
+                const std::array<float, 3> nb_pose = {nb_x, nb_y, nb_a};
+                const std::array<int, 3> nb_grid = fine_to_grid(nb_pose, fine_ratio, angle_resolution);
 
                 if (grid_parent.count(nb_grid) == 0)
                 {
@@ -150,19 +150,6 @@ void astar::explore_one_node(std::array<float, 3> curr_pose, std::array<int, 3> 
 
                     grid_status[nb_grid][1] = gcost + hcost;
 
-                    if (compute_h_cost_Euclidean(nb_pose, goal_pose) < 12)
-                    {
-                        if (abs(nb_a - goal_pose[2]) < 0.2)
-                        {
-                            FLAG_reach_goal = true;
-                            close_goal_angle = nb_a;
-                            close_goal_pose = nb_pose;
-                            grid_parent[goal_grid] = curr_grid;
-                            grid_fine_pose[goal_grid] = nb_pose;
-                            grid_status[goal_grid][2] = 2;
-                        }
-                    }
-
                     if (FLAG_update_map_for_view)
                     {
                         if(map_grid.at<cv::Vec3b>(nb_grid[1], nb_grid[0])[0] != 0 ){
@@ -176,15 +163,13 @@ void astar::explore_one_node(std::array<float, 3> curr_pose, std::array<int, 3> 
                     }
                 }
                 else{
-                    if(grid_status[nb_grid][2] == 1){
+                    if(grid_status[nb_grid][2] == 1 || ( grid_status[nb_grid][2] == 2 && grid_parent[nb_grid] == curr_grid )){
                         int old_cost = grid_status[nb_grid][1];
                         int gcost = grid_status[curr_grid][0] + edge_cost;
                         grid_status[nb_grid][0] = gcost;
 
                         int hcost = compute_h_cost_Euclidean(nb_pose, goal_pose);
-
                         hcost = improve_hcost(nb_pose, hcost, obstacle_scan_range, nb_steer==parent_steer);
-
                         int fcost = gcost + hcost;
                         
                         if(fcost < old_cost){
@@ -197,8 +182,9 @@ void astar::explore_one_node(std::array<float, 3> curr_pose, std::array<int, 3> 
                         }
                     }
                 }
-            }
-            else{
+
+                check_if_reach_goal(nb_pose, goal_pose, curr_grid);
+                
             }
         }
         count++;
@@ -296,4 +282,19 @@ void astar::get_path()
     show_resize_img(&map_for_view, 1.0, 0, window_name);
 }
 
+
+void astar::check_if_reach_goal(std::array<float, 3> node_pose,std::array<float, 3> in_goal_pose, std::array<int, 3> in_curr_grid){
+    if (compute_h_cost_Euclidean(node_pose, in_goal_pose) < 12)
+    {
+        if (abs(node_pose[2] - in_goal_pose[2]) < 0.2)
+        {
+            FLAG_reach_goal = true;
+            close_goal_angle = node_pose[2];
+            close_goal_pose = node_pose;
+            grid_parent[goal_grid] = in_curr_grid;
+            grid_fine_pose[goal_grid] = node_pose;
+            grid_status[goal_grid][2] = 2;
+        }
+    }
+}
 

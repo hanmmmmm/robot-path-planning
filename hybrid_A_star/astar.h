@@ -69,6 +69,7 @@ private:
     
     int check_collision( float x, float y, int scan_range );
     int improve_hcost(std::array<float, 3> node_pose, int hcost, int scan_range, bool same_steer);
+    void check_if_reach_goal(std::array<float, 3> node_pose,std::array<float, 3> in_goal_pose, std::array<int, 3> in_curr_grid);
 
 public:
     astar(int startnode[], int goalnode[], float s_angle, float g_angle, cv::Mat map);
