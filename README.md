@@ -10,14 +10,14 @@ They are using tasks with identical start/goal.
 
 ----
 ### Breadth First Searching
-<a id="search" href="https://github.com/hanmmmmm/robot-path-planning/blob/main/BFS/bfs.gif">
-    <img src="https://github.com/hanmmmmm/robot-path-planning/blob/main/BFS/bfs.gif" alt="BFS showcase gif" title="BFS search" width="500"/>
+<a id="search" href="https://github.com/hanmmmmm/robot-path-planning/blob/main/BFS/bfs.">
+    <img src="https://github.com/hanmmmmm/robot-path-planning/blob/main/BFS/bfs." alt="BFS showcase gif" title="BFS search" width="500"/>
 </a>
 
 ----
 ### Depth First Searching
-<a id="search" href="https://github.com/hanmmmmm/robot-path-planning/blob/main/DFS/dfs.gif">
-    <img src="https://github.com/hanmmmmm/robot-path-planning/blob/main/DFS/dfs.gif" alt="BFS showcase gif" title="BFS search" width="500"/>
+<a id="search" href="https://github.com/hanmmmmm/robot-path-planning/blob/main/DFS/dfs.">
+    <img src="https://github.com/hanmmmmm/robot-path-planning/blob/main/DFS/dfs." alt="BFS showcase gif" title="BFS search" width="500"/>
 </a>
 
 ----
