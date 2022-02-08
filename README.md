@@ -28,8 +28,8 @@ They are using tasks with identical start/goal.
 
 ----
 ### A-Star
-<a id="search" href="https://github.com/hanmmmmm/robot-path-planning/blob/main/A_star/astar.mp4">
-    <img src="https://github.com/hanmmmmm/robot-path-planning/blob/main/A_star/astar.mp4" alt="BFS showcase gif" title="BFS search" width="500"/>
+<a id="search" href="https://github.com/hanmmmmm/robot-path-planning/blob/main/A_star/astar.gif">
+    <img src="https://github.com/hanmmmmm/robot-path-planning/blob/main/A_star/astar.gif" alt="BFS showcase gif" title="BFS search" width="500"/>
 </a>
 
 ----
