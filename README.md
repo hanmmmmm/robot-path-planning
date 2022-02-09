@@ -19,13 +19,13 @@ They are using tasks with identical start/goal.
 ----
 ### Depth First Searching
 <a id="search" href="https://github.com/hanmmmmm/robot-path-planning/blob/main/DFS/dfs.gif">
-    <img src="https://github.com/hanmmmmm/robot-path-planning/blob/main/DFS/dfs.gif" alt="BFS showcase gif" title="BFS search" width="500"/>
+    <img src="https://github.com/hanmmmmm/robot-path-planning/blob/main/DFS/dfs.gif" alt="BFS showcase gif" title="DFS search" width="500"/>
 </a>
 
 ----
 ### Dijkstra's 
 <a id="search" href="https://github.com/hanmmmmm/robot-path-planning/blob/main/Dijkstra/dijkstra.gif">
-    <img src="https://github.com/hanmmmmm/robot-path-planning/blob/main/Dijkstra/dijkstra.gif" alt="BFS showcase gif" title="BFS search" width="500"/>
+    <img src="https://github.com/hanmmmmm/robot-path-planning/blob/main/Dijkstra/dijkstra.gif" alt="BFS showcase gif" title="Dijkstra search" width="500"/>
 </a>
 
 ----
@@ -34,15 +34,19 @@ They are using tasks with identical start/goal.
 This sample is using Manhattan distance as h-cost. <br/>
 
 <a id="search" href="https://github.com/hanmmmmm/robot-path-planning/blob/main/A_star/astar.gif">
-    <img src="https://github.com/hanmmmmm/robot-path-planning/blob/main/A_star/astar.gif" alt="BFS showcase gif" title="BFS search" width="500"/>
+    <img src="https://github.com/hanmmmmm/robot-path-planning/blob/main/A_star/astar.gif" alt="BFS showcase gif" title="A-Star search" width="500"/>
 </a>
 
 ----
 ### Hybrid A-Star
 <a id="search" href="https://github.com/hanmmmmm/robot-path-planning/blob/main/hybrid_A_star/hybrid_a_star.gif">
-    <img src="https://github.com/hanmmmmm/robot-path-planning/blob/main/hybrid_A_star/hybrid_a_star.gif" alt="BFS showcase gif" title="BFS search" width="500"/>
+    <img src="https://github.com/hanmmmmm/robot-path-planning/blob/main/hybrid_A_star/hybrid_a_star.gif" alt="Hybrid A-Star showcase gif" title="BFS search" width="500"/>
 </a>
-----
 
+----
+### Probabilistic RoadMap
+<a id="search" href="https://github.com/hanmmmmm/robot-path-planning/blob/main/PRM/prm.gif">
+    <img src="https://github.com/hanmmmmm/robot-path-planning/blob/main/PRM/prm.gif" alt="PRM showcase gif" title="BFS search" width="500"/>
+</a>
 
 
