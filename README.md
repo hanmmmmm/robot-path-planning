@@ -39,6 +39,11 @@ This sample is using Manhattan distance as h-cost. <br/>
 
 ----
 ### Hybrid A-Star
+
+This sample is using Euclidean distance as the primary source of h-cost. <br/>
+Then modify the h-cost based on the motion direction, steer, and priximity to obstacle. </br>
+The g-cost is the same as A-star. </br>
+
 <a id="search" href="https://github.com/hanmmmmm/robot-path-planning/blob/main/hybrid_A_star/hybrid_a_star.gif">
     <img src="https://github.com/hanmmmmm/robot-path-planning/blob/main/hybrid_A_star/hybrid_a_star.gif" alt="Hybrid A-Star showcase gif" title="BFS search" width="500"/>
 </a>
