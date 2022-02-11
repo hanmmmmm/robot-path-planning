@@ -2,7 +2,14 @@
 This is a collection of my implementation of robotic 2D path planning algorithms in c++. 
 
 Using only C++ standard libraries for algorithms, and OpenCV for visulization. 
+</br></br>
+Methods in progress:
+- [ ] D*
+- [ ] LPA*
+- [ ] Dubins
+- [ ] Potential field
 
+</br>
 ----
 # Demos
 
