@@ -64,6 +64,7 @@ The g-cost is the same as A-star. </br>
 ### RRT-star
 
 Max sample number: 1000  </br>
+The final path is much smoother than RRT above. </br>
 
 <a id="search" href="https://github.com/hanmmmmm/robot-path-planning/blob/main/RRT_star/rrt_star.gif">
     <img src="https://github.com/hanmmmmm/robot-path-planning/blob/main/RRT_star/rrt_star.gif" alt="RRTstar showcase gif" title="RRTstar search" width="500"/>
