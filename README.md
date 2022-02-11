@@ -60,7 +60,11 @@ The g-cost is the same as A-star. </br>
     <img src="https://github.com/hanmmmmm/robot-path-planning/blob/main/RRT/rrt.gif" alt="RRT showcase gif" title="RRT search" width="500"/>
 </a>
 
-
+----
+### RRT-star
+<a id="search" href="https://github.com/hanmmmmm/robot-path-planning/blob/main/RRT_star/rrt_star.gif">
+    <img src="https://github.com/hanmmmmm/robot-path-planning/blob/main/RRT_star/rrt_star.gif" alt="RRTstar showcase gif" title="RRTstar search" width="500"/>
+</a>
 
 
 
