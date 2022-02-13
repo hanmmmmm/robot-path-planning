@@ -40,6 +40,16 @@ They are using tasks with identical start/goal.
 ----
 ### D-Star
 
+After the first path is found, the robot starts moveing along the path. </br>
+
+The path is shown as orange line. </br>
+
+Some obstacles are added into the map while the robot is moving. </br>
+
+When the next step is blocked, it stops and looks for a new path to the goal. </br>
+
+The green line is the path during replanning; the new valid path is orange line. </br>
+
 <a id="search" href="https://github.com/hanmmmmm/robot-path-planning/blob/main/D_star/d_star.gif">
     <img src="https://github.com/hanmmmmm/robot-path-planning/blob/main/D_star/d_star.gif" alt="dstar showcase gif" title="D-Star search" width="500"/>
 </a>
