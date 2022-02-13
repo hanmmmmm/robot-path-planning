@@ -38,6 +38,14 @@ They are using tasks with identical start/goal.
 </a>
 
 ----
+### D-Star
+
+<a id="search" href="https://github.com/hanmmmmm/robot-path-planning/blob/main/D_star/d_star.gif">
+    <img src="https://github.com/hanmmmmm/robot-path-planning/blob/main/D_star/d_star.gif" alt="dstar showcase gif" title="D-Star search" width="500"/>
+</a>
+
+
+----
 ### A-Star
 
 This sample is using Manhattan distance as h-cost. <br/>
