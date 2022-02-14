@@ -82,7 +82,7 @@ This algo is based on the paper
 <a id="Dubins" href="https://cpb-us-e2.wpmucdn.com/faculty.sites.uci.edu/dist/e/700/files/2014/04/Dubins_Set_Robotics_2001.pdf">
     "Classification of the Dubins set"
 </a>
-. </br>
+ by Andrei M. Shkel, Vladimir Lumelsky. </br>
 
 
 
