@@ -75,6 +75,18 @@ The g-cost is the same as A-star. </br>
 </a>
 
 ----
+### Dubins curve
+
+This sample assume that the motion model contains only forward motion. <br/>
+This algo is based on the paper 
+<a id="Dubins" href="https://cpb-us-e2.wpmucdn.com/faculty.sites.uci.edu/dist/e/700/files/2014/04/Dubins_Set_Robotics_2001.pdf">
+    "Classification of the Dubins set"
+</a>
+. </br>
+
+
+
+----
 ### Probabilistic RoadMap
 <a id="search" href="https://github.com/hanmmmmm/robot-path-planning/blob/main/PRM/prm.gif">
     <img src="https://github.com/hanmmmmm/robot-path-planning/blob/main/PRM/prm.gif" alt="PRM showcase gif" title="BFS search" width="500"/>
