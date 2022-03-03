@@ -1,6 +1,9 @@
 # Robot Path Planning
 This is a collection of my implementation of robotic 2D path planning algorithms in c++. 
 
+This repo shows each algo individually. For a more complete navigation module, please check my this repo <a href="https://github.com/hanmmmmm/navigation_package_V1" > navigation_package_V1 </a> . 
+
+
 Using only C++ standard libraries for algorithms, and OpenCV for visulization. 
 </br></br>
 Methods in progress:
