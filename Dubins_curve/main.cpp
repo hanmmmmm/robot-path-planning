@@ -8,64 +8,74 @@
 #include "dubins.h"
 
 
-void find_path(int startnode[], int goalnode[], float start_angle, float goal_angle, cv::Mat map)
-{
-    Dubins path_finder(startnode, goalnode,start_angle, goal_angle, map);
-    std::cout << "Done init" << std::endl;
-
-    path_finder.search();
-
-    // path_finder.get_path();
-
-    // path_finder.print_path();
-}
-
-
 
 int main()
 {
+    
 
     std::string img_path = "map3.png";
 
     cv::Mat img = setup_map(img_path).clone();
 
-    //  case 1 
+    Dubins path_finder;
 
-    int startnode[2] = {100, 120};  // start position, {x ,y}
+    int startnode[2] = {270, 270};  // start position, {x ,y}
     int goalnode[2] = {440, 480 }; // goal  position, {x ,y}
     float start_angle;
     float goal_angle;
 
     goalnode[0] = 350;  // start position, x
-    goalnode[1] = 60;  // start position, x
+    goalnode[1] = 360;// 60;  // start position, x
     
-    start_angle = 2.9;
-    goal_angle  = 1.8 ;//M_PI/2;
+    start_angle = 0;// 2.9;
+    goal_angle  = 0 ;//M_PI/2;
     
-    find_path( startnode , goalnode, start_angle, goal_angle, img);
+    float pose2_pose_direction_step = 1 * M_PI / 180.0;
+    float pose2_pose_direction = 0;
+    int distance = 200;
 
-    goalnode[0] = 200;  // start position, x
-    goalnode[1] = 200;  // start position, x
-    start_angle = 0.65;
-    goal_angle  = 2.85;
-    find_path( startnode , goalnode, start_angle, goal_angle, img);
 
-    goalnode[0] = 200;  // start position, x
-    goalnode[1] = 300;  // start position, x
-    start_angle = 0;
-    goal_angle  = M_PI/2 + 0.32;
-    find_path( startnode , goalnode, start_angle, goal_angle, img);
+    goalnode[0] = int(270 + distance * cos(pose2_pose_direction));  // start position, x
+    goalnode[1] = int(270 + distance * sin(pose2_pose_direction));
+    path_finder.setup( startnode , goalnode, start_angle, goal_angle, img );
+    path_finder.search(true);
 
-    goalnode[0] = 190;  // start position, x
-    goalnode[1] = 480;  // start position, x
-    start_angle = 0;
-    goal_angle  = M_PI/2 + 0.51 ;
-    find_path( startnode , goalnode, start_angle, goal_angle, img);
+    while( pose2_pose_direction < 2*M_PI )
+    {
+        float pose2_x = 270 + distance * cos(pose2_pose_direction);
+        float pose2_y = 270 + distance * sin(pose2_pose_direction);
+        goal_angle  = pose2_pose_direction*2;
+        goalnode[0] = int(pose2_x);  // start position, x
+        goalnode[1] = int(pose2_y);
+        path_finder.setup( startnode , goalnode, start_angle, goal_angle, img );
+        path_finder.search(false);
+        // find_path( startnode , goalnode, start_angle, goal_angle, img);
 
-    goalnode[0] = 470;  // start position, x
-    goalnode[1] = 350;  // start position, x
-    start_angle = 0;   
-    goal_angle  = M_PI*0.5;
-    find_path( startnode , goalnode, start_angle, goal_angle, img);
+        pose2_pose_direction += pose2_pose_direction_step;
+
+    }
+
+    pose2_pose_direction = 0;
+    distance = 100;
+
+    while( pose2_pose_direction < 2*M_PI )
+    {
+        float pose2_x = 270 + distance * cos(pose2_pose_direction);
+        float pose2_y = 270 + distance * sin(pose2_pose_direction);
+        goal_angle  = pose2_pose_direction*2;
+        goalnode[0] = int(pose2_x);  // start position, x
+        goalnode[1] = int(pose2_y);
+        path_finder.setup( startnode , goalnode, start_angle, goal_angle, img );
+        path_finder.search(false);
+        // find_path( startnode , goalnode, start_angle, goal_angle, img);
+
+        pose2_pose_direction += pose2_pose_direction_step;
+
+    }
+
+    goalnode[0] = int(270 + distance * cos(pose2_pose_direction));  // start position, x
+    goalnode[1] = int(270 + distance * sin(pose2_pose_direction));
+    path_finder.setup( startnode , goalnode, start_angle, goal_angle, img );
+    path_finder.search(true);
 
 }

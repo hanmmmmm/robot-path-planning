@@ -36,6 +36,31 @@ private:
     const int obstacle_scan_range = 15;
     const int map_inflation_size = 5;
 
+    struct posePerSample
+    {
+        posePerSample(float xp, float yp, float angle):x(xp),y(yp),theta(angle){};
+        float x;
+        float y;
+        float theta; // radian
+    };
+    
+
+    struct pathResult
+    {
+        float path_length;
+        std::vector< posePerSample > path_steps;
+    };
+    
+
+    float angular_step_size = 0.05;
+    float linear_step_size = 1;
+
+    float v_l ;
+
+    std::unordered_map<std::string, pathResult> all_path_result;
+
+    std::unordered_map<std::string, cv::Scalar> all_path_colors;
+
     const std::string window_name = "map";
 
     // const float step_length = 20;
@@ -60,12 +85,18 @@ private:
 
     void compute_circle_center(std::array<float,3> robot_pose, std::string LorR, int radius, std::array<float,2>& center );
 
+    void sample_points_on_path();
 
+    void get_samples_L( const float target_angle_change, float robot_yaw, float& robotx, float& roboty, const std::string path_type  );
+    void get_samples_R( const float target_angle_change, float robot_yaw, float& robotx, float& roboty, const std::string path_type  );
+    void get_samples_S( const float target_angle_change, float robot_yaw, float& robotx, float& roboty, const std::string path_type  );
 
 public:
-    Dubins(int startnode[], int goalnode[], float s_angle, float g_angle, cv::Mat map);
+    Dubins();
 
     ~Dubins();
+
+    void setup(int startnode[], int goalnode[], float s_angle, float g_angle, cv::Mat map);
 
     bool FLAG_update_map_for_view = true;
 
@@ -74,16 +105,16 @@ public:
 
     // void search( std::array<float,3> start_pose, std::array<float,3> goal_pose);
 
-    void search(   );
+    void search( bool last  );
 
     void get_path( std::array<float,3> start_pose, std::array<float,3> goal_pose , std::string path_type, std::vector<float>& path_angle);
 
-    void compute_LSL_path(float alpha, float beta, float d, std::vector<float>& path_angles_seq);
-    void compute_RSR_path(float alpha, float beta, float d, std::vector<float>& path_angles_seq);
-    void compute_LSR_path(float alpha, float beta, float d, std::vector<float>& path_angles_seq);
-    void compute_RSL_path(float alpha, float beta, float d, std::vector<float>& path_angles_seq);
-    void compute_LRL_path(float alpha, float beta, float d, std::vector<float>& path_angles_seq);
-    void compute_RLR_path(float alpha, float beta, float d, std::vector<float>& path_angles_seq);
+    void compute_LSL_path(float alpha, float beta, float d, std::vector<float>& path_angles_seq, float& total_length);
+    void compute_RSR_path(float alpha, float beta, float d, std::vector<float>& path_angles_seq, float& total_length);
+    void compute_LSR_path(float alpha, float beta, float d, std::vector<float>& path_angles_seq, float& total_length);
+    void compute_RSL_path(float alpha, float beta, float d, std::vector<float>& path_angles_seq, float& total_length);
+    void compute_LRL_path(float alpha, float beta, float d, std::vector<float>& path_angles_seq, float& total_length);
+    void compute_RLR_path(float alpha, float beta, float d, std::vector<float>& path_angles_seq, float& total_length);
 
     void print_path();
 

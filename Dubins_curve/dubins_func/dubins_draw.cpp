@@ -3,8 +3,8 @@
 
 void Dubins::draw_start_goal_on_map(int arrow_length )
 {
-    cv::Vec3b color1 = {30, 80, 255};
-    cv::Vec3b color2 = {170, 30, 225};
+    cv::Vec3b color1 = {0,0,0}; //{30, 80, 255};
+    cv::Vec3b color2 = {0,0,0}; //{170, 30, 225};
 
     float s_theta = start_pose[2];
     float g_theta = goal_pose[2];
