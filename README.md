@@ -88,6 +88,9 @@ This algo is based on the paper
  by Andrei M. Shkel, Vladimir Lumelsky. </br>
 
 
+<a id="search" href="https://github.com/hanmmmmm/robot-path-planning/blob/main/Dubins_curve/dubins.gif">
+    <img src="https://github.com/hanmmmmm/robot-path-planning/blob/main/Dubins_curve/dubins.gif" alt="Dubins showcase gif" title="Dubins search" width="500"/>
+</a>
 
 ----
 ### Probabilistic RoadMap
