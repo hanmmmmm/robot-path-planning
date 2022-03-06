@@ -8,7 +8,7 @@ Using only C++ standard libraries for algorithms, and OpenCV for visulization.
 </br></br>
 Methods in progress:
 - [ ] LPA*
-- [ ] Dubins
+- [ ] Reeds-shepp
 - [ ] Potential field
 
 </br>
@@ -87,6 +87,9 @@ This algo is based on the paper
 </a>
  by Andrei M. Shkel, Vladimir Lumelsky. </br>
 
+The types of curves being tried are listed at the top left corner of gif; and their costs are printed as well.
+
+Those 2 black shart lines are the current pose and target pose.
 
 <a id="search" href="https://github.com/hanmmmmm/robot-path-planning/blob/main/Dubins_curve/dubins.gif">
     <img src="https://github.com/hanmmmmm/robot-path-planning/blob/main/Dubins_curve/dubins.gif" alt="Dubins showcase gif" title="Dubins search" width="500"/>
