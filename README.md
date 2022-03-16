@@ -15,6 +15,11 @@ Methods in progress:
 </br>
 
 
+# to-do
+update some of the gifs, since they were recorded with a very early version of code, which may casue non-optimal solution.
+
+(The code has updated, but gifs need re-recording)
+
 ----
 # Demos
 
