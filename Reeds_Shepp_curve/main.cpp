@@ -30,9 +30,16 @@ int main()
     start_angle = 0 ;  // 2.9;
     goal_angle  = 0 ;  //M_PI/2;
     
-    float pose2_pose_direction_step = 20 * M_PI / 180.0;
+    bool manual = false;
+    manual = true; // comment out this line to use animation mode. 
+
+    
+    float pose2_pose_direction_step ;
+    if( manual )   pose2_pose_direction_step  = 20 * M_PI / 180.0;
+    else pose2_pose_direction_step  = 0.5 * M_PI / 180.0;
+
     float pose2_pose_direction = 0;
-    int distance = 200;
+    int distance = 100;
 
 
     goalnode[0] = int(270 + distance * cos(pose2_pose_direction));  // start position, x
@@ -48,7 +55,9 @@ int main()
         goalnode[0] = int(pose2_x);  // start position, x
         goalnode[1] = int(pose2_y);
         path_finder.setup( startnode , goalnode, start_angle, goal_angle, img );
-        path_finder.search(true);
+        // if( manual ) path_finder.search(false);
+        // else 
+        path_finder.search(manual);
         // find_path( startnode , goalnode, start_angle, goal_angle, img);
 
         pose2_pose_direction += pose2_pose_direction_step;

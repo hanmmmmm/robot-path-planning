@@ -100,10 +100,22 @@ private:
     void LmSmLm(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid);
     void LmSmRm(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid);
     void RpSpRp(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid);
+    void RpSpLp(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid);
+    void RmSmRm(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid);
+    void RmSmLm(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid);
+
+    void LpRmL(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid);
+    void LmRpLm(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid);
+    void RpLmRp(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid);
+    void RmLpRm(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid);
+    void LpRmLm(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid);
+    void LmRpLp(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid);
+    void RpLmRm(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid);
+    void RmLpRp(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid);
 
     // void get_samples_L( const float target_angle_change, float robot_yaw, float& robotx, float& roboty, const std::string path_type  );
-    void get_samples_L( const float target_angle_change, float robot_yaw, float& robotx, float& roboty, const std::string path_type  );
-    void get_samples_R( const float target_angle_change, float robot_yaw, float& robotx, float& roboty, const std::string path_type  );
+    void get_samples_L( const float target_angle_change, float& robot_yaw, float& robotx, float& roboty, const std::string path_type  );
+    void get_samples_R( const float target_angle_change, float& robot_yaw, float& robotx, float& roboty, const std::string path_type  );
     void get_samples_S( const float target_angle_change, float robot_yaw, float& robotx, float& roboty, const std::string path_type  );
 
 public:

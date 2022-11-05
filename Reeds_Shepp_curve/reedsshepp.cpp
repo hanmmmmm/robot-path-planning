@@ -18,15 +18,26 @@
 ReedsSheppClass::ReedsSheppClass(  )
 {
     
-
     all_path_colors["LpSpLp"] = cv::Scalar(0,255,0);
     all_path_colors["LpSpRp"] = cv::Scalar(255,0,0);
     all_path_colors["LmSmLm"] = cv::Scalar(0,0,255);
     all_path_colors["LmSmRm"] = cv::Scalar(0,200,100);
-    all_path_colors["RpSpRp"] = cv::Scalar(80,0,255);
-    all_path_colors["LSR"] = cv::Scalar(255,255,0);
-    all_path_colors["LRL"] = cv::Scalar(0,155,255);
-    all_path_colors["RLR"] = cv::Scalar(255,0,255);
+    all_path_colors["RpSpRp"] = cv::Scalar(80,0,155);
+    all_path_colors["RpSpLp"] = cv::Scalar(255,0,0);
+    all_path_colors["RmSmRm"] = cv::Scalar(0,0,255);
+    all_path_colors["RmSmLm"] = cv::Scalar(0,200,100);
+
+    all_path_colors["LpRmL"] = cv::Scalar(0,255,0);
+    all_path_colors["LmRpLm"] = cv::Scalar(255,0,0);
+    all_path_colors["RpLmRp"] = cv::Scalar(0,0,255);
+    all_path_colors["RmLpRm"] = cv::Scalar(0,200,100);
+    all_path_colors["LpRmLm"] = cv::Scalar(80,0,155);
+    all_path_colors["LmRpLp"] = cv::Scalar(255,0,0);
+    all_path_colors["RpLmRm"] = cv::Scalar(0,0,255);
+    all_path_colors["RmLpRp"] = cv::Scalar(0,200,100);
+
+
+
 
     // cv::threshold(map_fine.clone(), map_collision, 100, 255, 1);
 
@@ -133,21 +144,32 @@ void ReedsSheppClass::search( bool last   )
     // path_angle.clear();
     // get_path(start_pose, goal_pose, "LmSmRm", path_angle, valid);
 
+    // valid = false;
+    // path_angle.clear();
+    // get_path(start_pose, goal_pose, "RpSpRp", path_angle, valid);
+
+    // valid = false;
+    // path_angle.clear();
+    // get_path(start_pose, goal_pose, "RpSpLp", path_angle, valid);
+
+    // valid = false;
+    // path_angle.clear();
+    // get_path(start_pose, goal_pose, "RmSmRm", path_angle, valid);
+
+    // valid = false;
+    // path_angle.clear();
+    // get_path(start_pose, goal_pose, "RmSmLm", path_angle, valid);
+
     valid = false;
     path_angle.clear();
-    get_path(start_pose, goal_pose, "RpSpRp", path_angle, valid);
+    get_path(start_pose, goal_pose, "LpRmL", path_angle, valid);
 
-    // path_angle.clear();
-    // get_path(start_pose, goal_pose, "LSL", path_angle);
+    valid = false;
+    path_angle.clear();
+    get_path(start_pose, goal_pose, "RpLmRp", path_angle, valid);
 
-    // path_angle.clear();
-    // get_path(start_pose, goal_pose, "RSR", path_angle);
 
-    // path_angle.clear();
-    // get_path(start_pose, goal_pose, "LRL", path_angle);
 
-    // path_angle.clear();
-    // get_path(start_pose, goal_pose, "RLR", path_angle);
 
     int type_counter = 0;
     for(auto curve : all_path_result)
@@ -206,13 +228,13 @@ void ReedsSheppClass::LpSpRp(double x, double y, double phi, double &t, double &
         valid = false;
         return;
     }
-    
     u = sqrt(u1*u1 - 4.);
     double theta = atan2(2., u);
     t = mod2pi(t1 + theta);
     v = mod2pi(t - phi);
     L = std::abs(t) + std::abs(u) + std::abs(v) ;
-    valid = true;
+    if (t >= 0.0 && v >= 0.0) valid = true;
+    else valid = false;
 }
 
 
@@ -228,10 +250,83 @@ void ReedsSheppClass::RpSpRp(double x, double y, double phi, double &t, double &
     LpSpLp(x,-y,-phi,t,u,v,L,valid);
 }
 
+void ReedsSheppClass::RpSpLp(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid){
+    LpSpRp(x, -y,-phi,t,u,v,L,valid);
+}
+
+void ReedsSheppClass::RmSmRm(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid){
+    LpSpLp(-x,-y, phi,t,u,v,L,valid);
+}
+
+void ReedsSheppClass::RmSmLm(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid){
+    LpSpRp(-x,-y, phi,t,u,v,L,valid);
+}
+
 // void ReedsSheppClass::LmSmRm(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid){
 //     LpSpRp(-x,y,-phi,t,u,v,L,valid);
 // }
 
+void ReedsSheppClass::LpRmL(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid){
+    double xi = x - sin(phi); 
+    double eta = y - 1. + cos(phi); 
+    double u1, theta;
+    polar(xi, eta, u1, theta);
+    
+    if (u1 > 4.0){
+        valid = false;
+    }
+    else{
+        u = -2.0 * asin( u1 / 4.0 );
+        t = mod2pi(theta + 0.5 * u + M_PI);
+        v = mod2pi(phi - t + u);
+        if (t >= 0.0 && u <= 0.0){
+            valid = true;
+        }
+        else{
+            valid = false;
+        }
+    }
+}
+
+
+    
+
+void ReedsSheppClass::LmRpLm(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid){
+    LpRmL(-x, y, -phi, t, u, v, L, valid);
+}
+
+void ReedsSheppClass::RpLmRp(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid){
+    LpRmL(x, -y, -phi, t, u, v, L, valid);
+}
+
+void ReedsSheppClass::RmLpRm(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid){
+    LpRmL(-x, -y, phi, t, u, v, L, valid);
+}
+
+// void ReedsSheppClass::LpRmLm(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid){
+//     double xb = x*cos(phi)+y*sin(phi);
+//     double yb = x*sin(phi)-y*cos(phi);
+//     LpRmL( xb, yb, phi, t, u, v, L, valid);
+// }
+
+// void ReedsSheppClass::LmRpLp(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid){
+//     double xb = x*cos(phi)+y*sin(phi);
+//     double yb = x*sin(phi)-y*cos(phi);
+//     LpRmL( -xb, yb, -phi, t, u, v, L, valid);
+// }
+
+// void ReedsSheppClass::RpLmRm(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid){
+//     double xb = x*cos(phi)+y*sin(phi);
+//     double yb = x*sin(phi)-y*cos(phi);
+//     LpRmL( xb, -yb, -phi, t, u, v, L, valid);
+// }
+
+
+// void ReedsSheppClass::RmLpRp(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid){
+//     double xb = x*cos(phi)+y*sin(phi);
+//     double yb = x*sin(phi)-y*cos(phi);
+//     LpRmL( -xb, -yb, phi, t, u, v, L, valid);
+// }
 
 
 void ReedsSheppClass::get_path( std::array<float,3> start_pose, std::array<float,3> goal_pose , std::string path_type, std::vector<float>& path_angle, bool& valid)
@@ -249,7 +344,7 @@ void ReedsSheppClass::get_path( std::array<float,3> start_pose, std::array<float
 
     float robot_x     = start_pose[0] ;
     float robot_y     = start_pose[1] ;
-    float robot_theta = 0; //start_pose[2] ;
+    float robot_theta = start_pose[2] ;
 
     float theta_change = 0;
 
@@ -332,11 +427,94 @@ void ReedsSheppClass::get_path( std::array<float,3> start_pose, std::array<float
         }
     }
 
+    if(path_type == "RpSpLp" ){
+        double t,u,v, L; 
+        RpSpLp(goal_x_rotated, goal_y_rotated,goal_theta, t,u,v,L,valid);
+        if( valid ){
+            std::cout << "t " << t << std::endl;
+            std::cout << "u " << u << std::endl;
+            std::cout << "v " << v << std::endl;
+
+            get_samples_R( t, robot_theta, robot_x, robot_y, path_type);
+            robot_theta = start_pose[2] - t;
+            get_samples_S( u, robot_theta, robot_x, robot_y, path_type);
+            get_samples_L( v, robot_theta, robot_x, robot_y, path_type);
+        }
+    }
+
+    if(path_type == "RmSmRm" ){
+        double t,u,v, L; 
+        RmSmRm(goal_x_rotated, goal_y_rotated,goal_theta, t,u,v,L,valid);
+        if( valid ){
+            std::cout << "t " << t << std::endl;
+            std::cout << "u " << u << std::endl;
+            std::cout << "v " << v << std::endl;
+
+            get_samples_R( -t, robot_theta, robot_x, robot_y, path_type);
+            robot_theta = start_pose[2] + t;
+            get_samples_S( -u, robot_theta, robot_x, robot_y, path_type);
+            get_samples_R( -v, robot_theta, robot_x, robot_y, path_type);
+        }
+    }
+
+    if(path_type == "RmSmLm" ){
+        double t,u,v, L; 
+        RmSmLm(goal_x_rotated, goal_y_rotated,goal_theta, t,u,v,L,valid);
+        if( valid ){
+            std::cout << "t " << t << std::endl;
+            std::cout << "u " << u << std::endl;
+            std::cout << "v " << v << std::endl;
+
+            get_samples_R( -t, robot_theta, robot_x, robot_y, path_type);
+            robot_theta = start_pose[2] + t;
+            get_samples_S( -u, robot_theta, robot_x, robot_y, path_type);
+            get_samples_L( -v, robot_theta, robot_x, robot_y, path_type);
+        }
+    }
+
+    if(path_type == "LpRmL" ){
+        double t,u,v, L; 
+        LpRmL(goal_x_rotated, goal_y_rotated,goal_theta, t,u,v,L,valid);
+        if( valid ){
+            std::cout << "t " << t << std::endl;
+            std::cout << "u " << u << std::endl;
+            std::cout << "v " << v << std::endl;
+
+            get_samples_L( t, robot_theta, robot_x, robot_y, path_type);
+            // robot_theta = start_pose[2] + t;
+            std::cout << "robot_theta " << robot_theta << std::endl;
+            get_samples_R( u, robot_theta, robot_x, robot_y, path_type);
+            // robot_theta += u;
+            std::cout << "robot_theta " << robot_theta << std::endl;
+            get_samples_L( v, robot_theta, robot_x, robot_y, path_type);
+        }
+    }
+
+    if(path_type == "RpLmRp" ){
+        double t,u,v, L; 
+        RpLmRp(goal_x_rotated, goal_y_rotated,goal_theta, t,u,v,L,valid);
+        if( valid ){
+            std::cout << "t " << t << std::endl;
+            std::cout << "u " << u << std::endl;
+            std::cout << "v " << v << std::endl;
+
+            get_samples_R( t, robot_theta, robot_x, robot_y, path_type);
+            // robot_theta = start_pose[2] + t;
+            std::cout << "robot_theta " << robot_theta << std::endl;
+            get_samples_L( u, robot_theta, robot_x, robot_y, path_type);
+            // robot_theta += u;
+            std::cout << "robot_theta " << robot_theta << std::endl;
+            get_samples_R( v, robot_theta, robot_x, robot_y, path_type);
+        }
+    }
+
+
 }
 
 
-void ReedsSheppClass::get_samples_L( const float target_angle_change, float robot_yaw, float& robotx, float& roboty, const std::string path_type  )
+void ReedsSheppClass::get_samples_L( const float target_angle_change, float& robot_yaw, float& robotx, float& roboty, const std::string path_type  )
 {
+    double init_yaw = robot_yaw;
     float theta_change = 0;
     double speed = 0.0;
     double ang_step_size_local = 0.0;
@@ -359,11 +537,12 @@ void ReedsSheppClass::get_samples_L( const float target_angle_change, float robo
         posePerSample pose(robotx, roboty, robot_yaw);
         all_path_result[path_type].path_steps.push_back(pose);
     }
-
+    init_yaw += target_angle_change;
+    robot_yaw = mod2pi( init_yaw );
 }
 
 
-void ReedsSheppClass::get_samples_R( const float target_angle_change, float robot_yaw, float& robotx, float& roboty, const std::string path_type  )
+void ReedsSheppClass::get_samples_R( const float target_angle_change, float& robot_yaw, float& robotx, float& roboty, const std::string path_type  )
 {
     if(target_angle_change > 0){
         float theta_change = 0;
@@ -419,7 +598,6 @@ void ReedsSheppClass::get_samples_R( const float target_angle_change, float robo
 
 void ReedsSheppClass::get_samples_S( const float target_angle_change, float robot_yaw, float& robotx, float& roboty, const std::string path_type  )
 {
-
     float theta_change = 0;
     double linear_step_size_local = 0.0;
     if( target_angle_change >= 0.0 ){
@@ -438,34 +616,6 @@ void ReedsSheppClass::get_samples_S( const float target_angle_change, float robo
         posePerSample pose(robotx, roboty, robot_yaw);
         all_path_result[path_type].path_steps.push_back(pose);
     }
-
-
-
-    
-    // if ( target_angle_change > 0){
-    //     float theta_change = 0;
-    //     while (theta_change < target_angle_change*turning_raius)
-    //     {
-    //         robotx +=  linear_step_size * cos(robot_yaw);
-    //         roboty +=  linear_step_size * sin(robot_yaw);
-    //         theta_change += linear_step_size;
-    //         posePerSample pose(robotx, roboty, robot_yaw);
-    //         all_path_result[path_type].path_steps.push_back(pose);
-
-    //     }
-    // }
-    // if ( target_angle_change < 0){
-    //     float theta_change = 0;
-    //     while (theta_change > target_angle_change*turning_raius)
-    //     {
-    //         robotx -=  linear_step_size * cos(robot_yaw);
-    //         roboty -=  linear_step_size * sin(robot_yaw);
-    //         theta_change -= linear_step_size;
-    //         posePerSample pose(robotx, roboty, robot_yaw);
-    //         all_path_result[path_type].path_steps.push_back(pose);
-
-    //     }
-    // }
 }
 
 
