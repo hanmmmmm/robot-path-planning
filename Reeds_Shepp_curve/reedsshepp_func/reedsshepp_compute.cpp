@@ -5,29 +5,6 @@
 // #include "../utils/math_tools.h"
 #include <numeric>
 
-int ReedsSheppClass::check_collision(float x, float y, int scan_range)
-{
-    int xstart = std::max(int(x) - scan_range, 0);
-    int ystart = std::max(int(y) - scan_range, 0);
-    int xrange = std::min(scan_range * 2, fine_map_width - xstart - 1);
-    int yrange = std::min(scan_range * 2, fine_map_height - ystart - 1);
-    cv::Rect roi(xstart, ystart, xrange, yrange);
-
-    cv::Mat local_map = map_collision(roi);
-
-    cv::Scalar local_map_sum = cv::sum(local_map);
-
-    return local_map_sum[0];
-}
-
-void ReedsSheppClass::map_inflation(cv::Mat *mapIn, cv::Mat *mapOut, int infla_size)
-{
-    const int erode_size = infla_size;
-    cv::Mat erode_element = cv::getStructuringElement(0, cv::Size(2 * erode_size + 1, 2 * erode_size + 1), cv::Point(erode_size, erode_size));
-    cv::erode(*mapIn, *mapOut, erode_element);
-}
-
-
 
 
 
@@ -253,24 +230,24 @@ void ReedsSheppClass::map_inflation(cv::Mat *mapIn, cv::Mat *mapOut, int infla_s
 
 
 
-float ReedsSheppClass::rectify_angle_rad(float ang)
-{
-    while (ang > 2 * M_PI)
-        ang -= 2 * M_PI;
-    while (ang < 0)
-        ang += 2 * M_PI;
-    return ang;
-}
+// float ReedsSheppClass::rectify_angle_rad(float ang)
+// {
+//     while (ang > 2 * M_PI)
+//         ang -= 2 * M_PI;
+//     while (ang < 0)
+//         ang += 2 * M_PI;
+//     return ang;
+// }
 
 
-float ReedsSheppClass::compute_h_cost_Euclidean(const std::array<float, 3> n, const std::array<float, 3> g)
-{
-    float h = 0;
+// float ReedsSheppClass::compute_h_cost_Euclidean(const std::array<float, 3> n, const std::array<float, 3> g)
+// {
+//     float h = 0;
 
-    float dx = n[0] - g[0];
-    float dy = n[1] - g[1];
+//     float dx = n[0] - g[0];
+//     float dy = n[1] - g[1];
 
-    h = sqrt(dx * dx + dy * dy) * 1;
+//     h = sqrt(dx * dx + dy * dy) * 1;
 
-    return (h);
-}
+//     return (h);
+// }
