@@ -129,9 +129,9 @@ void ClassRScurveOpencv::draw_vector_on_map( std::array<double, 3> vect_meter )
     meter_to_pixel( x_end_meter, y_end_meter, u_end,   v_end );
     meter_to_pixel( x_meter,     y_meter,     u_start, v_start );
 
-    std::cout << "\ndraw_vector_on_map(): " << std::endl;
+    // std::cout << "\ndraw_vector_on_map(): " << std::endl;
     // std::cout << "From " << x_meter << " "<< y_meter << " "<< theta << " == ";
-    std::cout << u_start << " "<< v_start << std::endl;
+    // std::cout << u_start << " "<< v_start << std::endl;
     // std::cout << "To   " << x_end_meter << " "<< y_end_meter << " "<< theta << " == ";
     // std::cout << u_end << " "<< v_end << std::endl;
 
@@ -151,7 +151,7 @@ void ClassRScurveOpencv::draw_path_by_cvline( ClassReedSheppPath::pathResult pat
             first_point = false;
         }
         else{
-            cv::line(map_, cv::Point(pt_a_x, pt_a_y), cv::Point(pt_b_x, pt_b_y), all_path_colors[path_holder.path_word], 2);
+            cv::line(map_, cv::Point(pt_a_x, pt_a_y), cv::Point(pt_b_x, pt_b_y), all_path_colors[path_holder.path_word], 1);
         }
         pt_a_x = pt_b_x;
         pt_a_y = pt_b_y;
@@ -173,10 +173,10 @@ void ClassRScurveOpencv::draw_path_by_cvPoint( ClassReedSheppPath::pathResult pa
 
 
 void ClassRScurveOpencv::add_legend( std::string name, double length ){
-
+        
         std::ostringstream str;
-        str << name << " " << length;
-        cv::putText(map_ , str.str().substr(0,8) , cv::Point(legend_pose_u_, legend_pose_v_),cv::FONT_HERSHEY_DUPLEX,1, all_path_colors[name] ,2,false);
+        str << name << " " << std::to_string( length).substr(0,5);
+        cv::putText(map_ , str.str(), cv::Point(legend_pose_u_, legend_pose_v_),cv::FONT_HERSHEY_DUPLEX,1, all_path_colors[name] ,2,false);
 
         legend_pose_v_ += legend_height_ ;
 }

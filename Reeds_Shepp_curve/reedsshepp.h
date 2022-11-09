@@ -26,8 +26,8 @@ private:
 
     double turning_raius_ = 0.5;  // meters
     
-    double angular_step_size = 0.05;
-    double linear_step_size = 0.1;
+    double angular_step_size = 0.02;
+    double linear_step_size = 0.05;
 
     double v_l ;
 
@@ -49,6 +49,8 @@ private:
     void LpSpLp_base( double x, double y, double phi,  double &t, double &u, double &v, double& L, bool& valid);
 
     void LpSpRp_base( double x, double y, double phi,  double &t, double &u, double &v, double& L, bool& valid);
+
+    void LpRmL_base(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid);
 
     void LpSpLp(   );
     void LpSpRp(   );
@@ -112,17 +114,6 @@ void ReedsSheppClass::setup(  std::array<double, 3> start_pose, std::array<doubl
 
     all_possible_paths_.reset(); 
 
-    // all_possible_paths_.LpSpLp.path_steps.clear();
-    // all_possible_paths_.LpSpRp.path_steps.clear();
-    // all_possible_paths_.LmSmLm.path_steps.clear();
-    // all_possible_paths_.LmSmRm.path_steps.clear();
-    // all_possible_paths_.RpSpRp.path_steps.clear();
-    // all_possible_paths_.RpSpLp.path_steps.clear();
-    // all_possible_paths_.RmSmRm.path_steps.clear();
-    // all_possible_paths_.RmSmLm.path_steps.clear();
-    // all_possible_paths_.LpRmL.path_steps.clear();
-    // all_possible_paths_.RpLmRp.path_steps.clear();
-    // all_possible_paths_.RmLpRm.path_steps.clear();
 }
 
 
@@ -170,6 +161,17 @@ void ReedsSheppClass::search(  )
     LmSmRm();
     RpSpLp();
     RmSmLm();
+
+    LpRmL();
+    LmRpLm();
+    RpLmRp();
+    RmLpRm();
+
+    LpRmLm();
+    LmRpLp( );
+    RpLmRm( );
+    RmLpRp( );
+
 
 }
 
@@ -371,6 +373,242 @@ void ReedsSheppClass::RmSmLm( ){
 }
 
 
+void ReedsSheppClass::LpRmL_base(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid){
+    double xi = x - sin(phi); 
+    double eta = y - 1. + cos(phi); 
+    double u1, theta;
+    polar(xi, eta, u1, theta);
+    
+    if (u1 > 4.0){
+        valid = false;
+    }
+    else{
+        u = -2.0 * asin( u1 / 4.0 );
+        t = mod2pi(theta + 0.5 * u + M_PI);
+        v = mod2pi(phi - t + u);
+        if (t >= 0.0 && u <= 0.0){
+            valid = true;
+        }
+        else{
+            valid = false;
+        }
+    }
+    L = std::abs(t) + std::abs(u) + std::abs(v) ;
+}
+
+
+void ReedsSheppClass::LpRmL( ){
+    double x   = goal_pose_processed_[0];
+    double y   = goal_pose_processed_[1];
+    double phi = goal_pose_processed_[2];
+    double t, u, v, L; bool valid;
+    LpRmL_base(x,y, phi,t,u,v,L,valid);
+    all_possible_paths_.LpRmL.path_word = "LpRmL";
+    all_possible_paths_.LpRmL.valid = valid;
+    if( valid ){
+        all_possible_paths_.LpRmL.path_length_unitless = L; 
+        double robot_x     = start_pose_[0] ;
+        double robot_y     = start_pose_[1] ;
+        double robot_theta = start_pose_[2] ;
+        get_samples_L( t, robot_theta, robot_x, robot_y, all_possible_paths_.LpRmL);
+        get_samples_R( u, robot_theta, robot_x, robot_y, all_possible_paths_.LpRmL);
+        get_samples_L( v, robot_theta, robot_x, robot_y, all_possible_paths_.LpRmL);
+    }
+    // std::cout << "LpRmL  " << valid  << std::endl;
+}
+
+void ReedsSheppClass::LmRpLm( ){
+    double x   = goal_pose_processed_[0];
+    double y   = goal_pose_processed_[1];
+    double phi = goal_pose_processed_[2];
+    double t, u, v, L; bool valid;
+    LpRmL_base(-x,y, -phi,t,u,v,L,valid);
+    all_possible_paths_.LmRpLm.path_word = "LmRpLm";
+    all_possible_paths_.LmRpLm.valid = valid;
+    if( valid ){
+        all_possible_paths_.LmRpLm.path_length_unitless = L; 
+        double robot_x     = start_pose_[0] ;
+        double robot_y     = start_pose_[1] ;
+        double robot_theta = start_pose_[2] ;
+        get_samples_L( -t, robot_theta, robot_x, robot_y, all_possible_paths_.LmRpLm);
+        get_samples_R( -u, robot_theta, robot_x, robot_y, all_possible_paths_.LmRpLm);
+        get_samples_L( -v, robot_theta, robot_x, robot_y, all_possible_paths_.LmRpLm);
+    }
+    // std::cout << "LmRpLm  " << valid  << std::endl;
+}
+
+
+void ReedsSheppClass::RpLmRp( ){
+    double x   = goal_pose_processed_[0];
+    double y   = goal_pose_processed_[1];
+    double phi = goal_pose_processed_[2];
+    double t, u, v, L; bool valid;
+    LpRmL_base( x, -y, -phi,t,u,v,L,valid);
+    all_possible_paths_.RpLmRp.path_word = "RpLmRp";
+    all_possible_paths_.RpLmRp.valid = valid;
+    if( valid ){
+        all_possible_paths_.RpLmRp.path_length_unitless = L; 
+        double robot_x     = start_pose_[0] ;
+        double robot_y     = start_pose_[1] ;
+        double robot_theta = start_pose_[2] ;
+        get_samples_R( t, robot_theta, robot_x, robot_y, all_possible_paths_.RpLmRp);
+        get_samples_L( u, robot_theta, robot_x, robot_y, all_possible_paths_.RpLmRp);
+        get_samples_R( v, robot_theta, robot_x, robot_y, all_possible_paths_.RpLmRp);
+    }
+    // std::cout << "RpLmRp  " << valid  << std::endl;
+}
+
+void ReedsSheppClass::RmLpRm( ){
+    double x   = goal_pose_processed_[0];
+    double y   = goal_pose_processed_[1];
+    double phi = goal_pose_processed_[2];
+    double t, u, v, L; bool valid;
+    LpRmL_base( -x, -y, phi,t,u,v,L,valid);
+    all_possible_paths_.RmLpRm.path_word = "RmLpRm";
+    all_possible_paths_.RmLpRm.valid = valid;
+    if( valid ){
+        all_possible_paths_.RmLpRm.path_length_unitless = L; 
+        double robot_x     = start_pose_[0] ;
+        double robot_y     = start_pose_[1] ;
+        double robot_theta = start_pose_[2] ;
+        get_samples_R( -t, robot_theta, robot_x, robot_y, all_possible_paths_.RmLpRm);
+        get_samples_L( -u, robot_theta, robot_x, robot_y, all_possible_paths_.RmLpRm);
+        get_samples_R( -v, robot_theta, robot_x, robot_y, all_possible_paths_.RmLpRm);
+    }
+    // std::cout << "RmLpRm  " << valid  << std::endl;
+}
+
+
+void ReedsSheppClass::LpRmLm( ){
+    double x   = goal_pose_processed_[0];
+    double y   = goal_pose_processed_[1];
+    double phi = goal_pose_processed_[2];
+    double t, u, v, L; bool valid;
+    double xb = x*cos(phi)+y*sin(phi);
+    double yb = x*sin(phi)-y*cos(phi);
+    LpRmL_base( xb, yb, phi, t, u, v, L, valid);
+    all_possible_paths_.LpRmLm.path_word = "LpRmLm";
+    all_possible_paths_.LpRmLm.valid = valid;
+    if( valid ){
+        v = M_PI*2.0 - v;
+        L = std::abs(t) + std::abs(u) + std::abs(v) ; 
+        all_possible_paths_.LpRmLm.path_length_unitless = L; 
+        double robot_x     = start_pose_[0] ;
+        double robot_y     = start_pose_[1] ;
+        double robot_theta = start_pose_[2] ;
+        get_samples_L( t, robot_theta, robot_x, robot_y, all_possible_paths_.LpRmLm);
+        get_samples_R( u, robot_theta, robot_x, robot_y, all_possible_paths_.LpRmLm);
+        get_samples_L( -v, robot_theta, robot_x, robot_y, all_possible_paths_.LpRmLm);
+    }
+    // std::cout << "LpRmLm  " << valid  << " " << t << " " << u << " " << v << std::endl;
+}
+
+
+void ReedsSheppClass::LmRpLp( ){
+    double x   = goal_pose_processed_[0];
+    double y   = goal_pose_processed_[1];
+    double phi = goal_pose_processed_[2];
+    double t, u, v, L; bool valid;
+    double xb = x*cos(phi)+y*sin(phi);
+    double yb = x*sin(phi)-y*cos(phi);
+    LpRmL_base( -xb, yb, -phi, t, u, v, L, valid);
+    all_possible_paths_.LmRpLp.path_word = "LmRpLp";
+    all_possible_paths_.LmRpLp.valid = valid;
+    if( valid ){
+        v = M_PI*2.0 - v;
+        L = std::abs(t) + std::abs(u) + std::abs(v) ; 
+        all_possible_paths_.LmRpLp.path_length_unitless = L; 
+        double robot_x     = start_pose_[0] ;
+        double robot_y     = start_pose_[1] ;
+        double robot_theta = start_pose_[2] ;
+        get_samples_L( -t, robot_theta, robot_x, robot_y, all_possible_paths_.LmRpLp);
+        get_samples_R( -u, robot_theta, robot_x, robot_y, all_possible_paths_.LmRpLp);
+        get_samples_L( v, robot_theta, robot_x, robot_y, all_possible_paths_.LmRpLp);
+    }
+    // std::cout << "LmRpLp  " << valid  << " " << t << " " << u << " " << v << std::endl;
+}
+
+void ReedsSheppClass::RpLmRm( ){
+    double x   = goal_pose_processed_[0];
+    double y   = goal_pose_processed_[1];
+    double phi = goal_pose_processed_[2];
+    double t, u, v, L; bool valid;
+    double xb = x*cos(phi)+y*sin(phi);
+    double yb = x*sin(phi)-y*cos(phi);
+    LpRmL_base( xb, -yb, -phi, t, u, v, L, valid);
+    all_possible_paths_.RpLmRm.path_word = "RpLmRm";
+    all_possible_paths_.RpLmRm.valid = valid;
+    if( valid ){
+        v = M_PI*2.0 - v;
+        L = std::abs(t) + std::abs(u) + std::abs(v) ; 
+        all_possible_paths_.RpLmRm.path_length_unitless = L; 
+        double robot_x     = start_pose_[0] ;
+        double robot_y     = start_pose_[1] ;
+        double robot_theta = start_pose_[2] ;
+        get_samples_R( t, robot_theta, robot_x, robot_y, all_possible_paths_.RpLmRm);
+        get_samples_L( u, robot_theta, robot_x, robot_y, all_possible_paths_.RpLmRm);
+        get_samples_R( -v, robot_theta, robot_x, robot_y, all_possible_paths_.RpLmRm);
+    }
+    std::cout << "RpLmRm  " << valid  << " " << t << " " << u << " " << v << std::endl;
+}
+
+
+void ReedsSheppClass::RmLpRp( ){
+    double x   = goal_pose_processed_[0];
+    double y   = goal_pose_processed_[1];
+    double phi = goal_pose_processed_[2];
+    double t, u, v, L; bool valid;
+    double xb = x*cos(phi)+y*sin(phi);
+    double yb = x*sin(phi)-y*cos(phi);
+    LpRmL_base( -xb, -yb, phi, t, u, v, L, valid);
+    all_possible_paths_.RmLpRp.path_word = "RmLpRp";
+    all_possible_paths_.RmLpRp.valid = valid;
+    if( valid ){
+        v = M_PI*2.0 - v;
+        L = std::abs(t) + std::abs(u) + std::abs(v) ; 
+        all_possible_paths_.RmLpRp.path_length_unitless = L; 
+        double robot_x     = start_pose_[0] ;
+        double robot_y     = start_pose_[1] ;
+        double robot_theta = start_pose_[2] ;
+        get_samples_R( -t, robot_theta, robot_x, robot_y, all_possible_paths_.RmLpRp);
+        get_samples_L( -u, robot_theta, robot_x, robot_y, all_possible_paths_.RmLpRp);
+        get_samples_R( v, robot_theta, robot_x, robot_y, all_possible_paths_.RmLpRp);
+    }
+    // std::cout << "RmLpRp  " << valid  << " " << t << " " << u << " " << v << std::endl;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 void ReedsSheppClass::get_samples_L( const double target_angle_change, double& robot_yaw, double& robotx, double& roboty, ClassReedSheppPath::pathResult& result_container )// const std::string path_type  )
@@ -396,7 +634,6 @@ void ReedsSheppClass::get_samples_L( const double target_angle_change, double& r
         theta_change += ang_step_size_local;
         robot_yaw += ang_step_size_local ;
         ClassReedSheppPath::posePerSample pose(robotx, roboty, robot_yaw);
-        // all_path_result[path_type].path_steps.push_back(pose);
         result_container.path_steps.push_back(pose);
     }
     init_yaw += target_angle_change;
@@ -406,62 +643,91 @@ void ReedsSheppClass::get_samples_L( const double target_angle_change, double& r
 
 void ReedsSheppClass::get_samples_R( const double target_angle_change, double& robot_yaw, double& robotx, double& roboty, ClassReedSheppPath::pathResult& result_container )//, const std::string path_type  )
 {
-    if(target_angle_change > 0){
-        double theta_change = 0;
-        while (theta_change < target_angle_change)
-            {
-                double dx = v_l * cos( robot_yaw + angular_step_size/2);
-                double dy = v_l * sin( robot_yaw + angular_step_size/2);
-                robotx = robotx + (dx);
-                roboty = roboty + (dy);
-                theta_change += angular_step_size;
-                robot_yaw -= angular_step_size ;
-
-                ClassReedSheppPath::posePerSample pose(robotx, roboty, robot_yaw);
-                // all_path_result[path_type].path_steps.push_back(pose);
-                result_container.path_steps.push_back(pose);
-
-                // std::cout << " raius " << turning_raius ;
-                // std::cout << "  robot_theta "  << int(robot_theta*180.0/M_PI) ;
-                // std::cout << "  x " << robot_x << " y " << robot_y ;
-                // std::cout << "  angular_step_size " << angular_step_size  ;
-                // std::cout << "  theta_change " << theta_change  ;
-                // std::cout << "  dx " << dx << " dy " << dy << std::endl;
-                // std::cout << robot_theta*180.0/M_PI << " " << robot_x << " " << robot_y << " " << v_l  << " " << dx << " " << dy << std::endl;
-            }
+    double init_yaw = robot_yaw;
+    double theta_change = 0;
+    double speed = 0.0;
+    double ang_step_size_local = 0.0;
+    if( target_angle_change >= 0.0 ){
+        speed = v_l;
+        ang_step_size_local = -1.0 * angular_step_size;
     }
-    if(target_angle_change < 0){
-        double theta_change = 0;
-        while (theta_change > target_angle_change)
-            {
-                double dx = v_l * cos( robot_yaw - angular_step_size/2);
-                double dy = v_l * sin( robot_yaw - angular_step_size/2);
-                robotx = robotx - (dx);
-                roboty = roboty - (dy);
-                theta_change -= angular_step_size;
-                robot_yaw += angular_step_size ;
-
-                // cv::circle(map_for_view, cv::Point(robotx, roboty), 1, cv::Scalar(0,255,0),  -1);
-
-                ClassReedSheppPath::posePerSample pose(robotx, roboty, robot_yaw);
-                // all_path_result[path_type].path_steps.push_back(pose);
-                result_container.path_steps.push_back(pose);
-
-                // std::cout << " raius " << turning_raius ;
-                // std::cout << "  robot_theta "  << int(robot_theta*180.0/M_PI) ;
-                // std::cout << "  x " << robot_x << " y " << robot_y ;
-                // std::cout << "  angular_step_size " << angular_step_size  ;
-                // std::cout << "  theta_change " << theta_change  ;
-                // std::cout << "  dx " << dx << " dy " << dy << std::endl;
-                // std::cout << robot_theta*180.0/M_PI << " " << robot_x << " " << robot_y << " " << v_l  << " " << dx << " " << dy << std::endl;
-            }
+    else {
+        speed = -1.0 * v_l;
+        ang_step_size_local = angular_step_size;
     }
+    while ( std::abs( theta_change )  < std::abs( target_angle_change ) ){
+        double dx = speed * cos( robot_yaw + ang_step_size_local/2);
+        double dy = speed * sin( robot_yaw + ang_step_size_local/2);
+        robotx = robotx + dx;
+        roboty = roboty + dy;
+        theta_change += ang_step_size_local;
+        robot_yaw += ang_step_size_local ;
+        ClassReedSheppPath::posePerSample pose(robotx, roboty, robot_yaw);
+        // all_path_result[path_type].path_steps.push_back(pose);
+        result_container.path_steps.push_back(pose);
+    }
+    init_yaw -= target_angle_change;
+    robot_yaw = mod2pi( init_yaw );
+
+
+    // if(target_angle_change > 0){
+    //     double theta_change = 0;
+    //     while (theta_change < target_angle_change)
+    //         {
+    //             double dx = v_l * cos( robot_yaw + angular_step_size/2);
+    //             double dy = v_l * sin( robot_yaw + angular_step_size/2);
+    //             robotx = robotx + (dx);
+    //             roboty = roboty + (dy);
+    //             theta_change += angular_step_size;
+    //             robot_yaw -= angular_step_size ;
+
+    //             ClassReedSheppPath::posePerSample pose(robotx, roboty, robot_yaw);
+    //             // all_path_result[path_type].path_steps.push_back(pose);
+    //             result_container.path_steps.push_back(pose);
+
+    //             // std::cout << " raius " << turning_raius ;
+    //             // std::cout << "  robot_theta "  << int(robot_theta*180.0/M_PI) ;
+    //             // std::cout << "  x " << robot_x << " y " << robot_y ;
+    //             // std::cout << "  angular_step_size " << angular_step_size  ;
+    //             // std::cout << "  theta_change " << theta_change  ;
+    //             // std::cout << "  dx " << dx << " dy " << dy << std::endl;
+    //             // std::cout << robot_theta*180.0/M_PI << " " << robot_x << " " << robot_y << " " << v_l  << " " << dx << " " << dy << std::endl;
+    //         }
+    // }
+    // if(target_angle_change < 0){
+    //     double theta_change = 0;
+    //     while (theta_change > target_angle_change)
+    //         {
+    //             double dx = v_l * cos( robot_yaw - angular_step_size/2);
+    //             double dy = v_l * sin( robot_yaw - angular_step_size/2);
+    //             robotx = robotx - (dx);
+    //             roboty = roboty - (dy);
+    //             theta_change -= angular_step_size;
+    //             robot_yaw += angular_step_size ;
+
+    //             // cv::circle(map_for_view, cv::Point(robotx, roboty), 1, cv::Scalar(0,255,0),  -1);
+
+    //             ClassReedSheppPath::posePerSample pose(robotx, roboty, robot_yaw);
+    //             // all_path_result[path_type].path_steps.push_back(pose);
+    //             result_container.path_steps.push_back(pose);
+
+    //             // std::cout << " raius " << turning_raius ;
+    //             // std::cout << "  robot_theta "  << int(robot_theta*180.0/M_PI) ;
+    //             // std::cout << "  x " << robot_x << " y " << robot_y ;
+    //             // std::cout << "  angular_step_size " << angular_step_size  ;
+    //             // std::cout << "  theta_change " << theta_change  ;
+    //             // std::cout << "  dx " << dx << " dy " << dy << std::endl;
+    //             // std::cout << robot_theta*180.0/M_PI << " " << robot_x << " " << robot_y << " " << v_l  << " " << dx << " " << dy << std::endl;
+    //         }
+    // }
 }
 
 
 
 void ReedsSheppClass::get_samples_S( const double target_angle_change, double  robot_yaw, double& robotx, double& roboty, ClassReedSheppPath::pathResult& result_container ) 
 {
+    double init_x = robotx;
+    double init_y = roboty;
     double theta_change = 0;
     double linear_step_size_local = 0.0;
     if( target_angle_change >= 0.0 ){
@@ -481,6 +747,8 @@ void ReedsSheppClass::get_samples_S( const double target_angle_change, double  r
         // all_path_result[path_type].path_steps.push_back(pose);
         result_container.path_steps.push_back(pose);
     }
+    robotx = init_x + target_angle_change*turning_raius_ * cos( robot_yaw );
+    roboty = init_y + target_angle_change*turning_raius_ * sin( robot_yaw );
 }
 
 

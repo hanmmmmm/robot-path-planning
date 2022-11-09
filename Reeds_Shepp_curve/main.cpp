@@ -31,15 +31,15 @@ int main()
     std::array<double,3> goal_pose  = { 6.5, 0.3, 0.0};
 
     bool manual = false;
-    // manual = true; // comment out this line to use animation mode. 
+    manual = true; // comment out this line to use animation mode. 
 
     
     float pose2_pose_direction_step ;
-    if( manual )   pose2_pose_direction_step  = 20 * M_PI / 180.0;
+    if( manual )   pose2_pose_direction_step  = 10 * M_PI / 180.0;
     else pose2_pose_direction_step  = 0.5 * M_PI / 180.0;
 
     double goal_direction = 0;  // 
-    double distance = 2.1;  // meter 
+    double distance = 3.7;  // meter 
 
     int loop_count = 0;
     while (goal_direction < 2*M_PI )
@@ -67,6 +67,16 @@ int main()
         vis.draw_path_by_cvline( path_finder.all_possible_paths_.RpSpRp );
         vis.draw_path_by_cvline( path_finder.all_possible_paths_.RmSmRm );
         vis.draw_path_by_cvline( path_finder.all_possible_paths_.RmSmLm );
+
+        vis.draw_path_by_cvline( path_finder.all_possible_paths_.LpRmL );
+        vis.draw_path_by_cvline( path_finder.all_possible_paths_.LmRpLm );
+        vis.draw_path_by_cvline( path_finder.all_possible_paths_.RpLmRp );
+        vis.draw_path_by_cvline( path_finder.all_possible_paths_.RmLpRm );
+
+        vis.draw_path_by_cvline( path_finder.all_possible_paths_.LpRmLm );
+        vis.draw_path_by_cvline( path_finder.all_possible_paths_.LmRpLp );
+        vis.draw_path_by_cvline( path_finder.all_possible_paths_.RpLmRm );
+        vis.draw_path_by_cvline( path_finder.all_possible_paths_.RmLpRp );
 
 
         vis.show(manual);
