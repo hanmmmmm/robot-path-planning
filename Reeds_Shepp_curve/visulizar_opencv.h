@@ -26,7 +26,7 @@ private:
     int map_width_pixel_  = 600;
     int map_height_pixel_ = 600;
 
-    double meter_to_pixel_ratio_ = 40.0 ; // meter x this -> pixel 
+    double meter_to_pixel_ratio_ = 50.0 ; // meter x this -> pixel 
 
     cv::Mat map_;  
 
@@ -61,7 +61,7 @@ public:
 ClassRScurveOpencv::ClassRScurveOpencv()
 {
     map_backup_ = cv::Mat::zeros(cv::Size(map_width_pixel_ , map_height_pixel_) , CV_8UC3);
-    map_backup_.setTo( cv::Scalar(255,255,255) );
+    map_backup_.setTo( cv::Scalar(225,225,225) );
 
     init();
 
@@ -82,6 +82,16 @@ ClassRScurveOpencv::ClassRScurveOpencv()
     all_path_colors["LmRpLp"] = cv::Scalar(255,0,0);
     all_path_colors["RpLmRm"] = cv::Scalar(0,0,255);
     all_path_colors["RmLpRp"] = cv::Scalar(0,200,100);
+
+    all_path_colors["LpRupLumRm"] = cv::Scalar(0,255,0);
+    all_path_colors["LmRumLupRp"] = cv::Scalar(255,0,0);
+    all_path_colors["RpLupRumLm"] = cv::Scalar(0,0,255);
+    all_path_colors["RmLumRupLp"] = cv::Scalar(0,200,100);
+    all_path_colors["LpRumLumRp"] = cv::Scalar(80,0,155);
+    all_path_colors["LmRupLupRm"] = cv::Scalar(255,0,0);
+    all_path_colors["RpLumRumLp"] = cv::Scalar(0,0,255);
+    all_path_colors["RmLupRupLm"] = cv::Scalar(0,200,100);
+
 
 }
 
