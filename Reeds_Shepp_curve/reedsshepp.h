@@ -65,6 +65,16 @@ private:
 
     void LpRumLumRp_base(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid);
 
+    void LpRm90SmRm_base(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid);
+
+    void LpRm90SmLm_base(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid);
+
+    // void LpSpLp90Rm_base(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid);
+
+    // void RpSpLp90Rm_base(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid);
+
+    void LpRm90SmLm90Rp_base(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid);
+
     void LpSpLp(   );
     void LpSpRp(   );
     void LmSmLm(   );
@@ -73,16 +83,6 @@ private:
     void RpSpLp(   );
     void RmSmRm(   );
     void RmSmLm(   );
-
-    // void LpRmL (   );
-    // void LpRmLp(   );
-    // void LmRpLm(   );
-    // void RpLmRp(   );
-    // void RmLpRm(   );
-    // void LpRmLm(   );
-    // void LmRpLp(   );
-    // void RpLmRm(   );
-    // void RmLpRp(   );
 
     void LpRupLumRm( );
     void LmRumLupRp( );
@@ -93,6 +93,32 @@ private:
     void LmRupLupRm( );
     void RpLumRumLp( );
     void RmLupRupLm( );
+
+    void LpRm90SmRm();
+    void LmRp90SpRp();
+    void RpLm90SmLm();
+    void RmLp90SpLp();
+    void LpRm90SmLm();
+    void LmRp90SpLp();
+    void RpLm90SmRm();
+    void RmLp90SpRp();
+
+    void RpSpLp90Rm();
+    void RmSmLm90Rp();
+    void LpSpRp90Lm();
+    void LmSmRm90Lp();
+
+    void LpSpLp90Rm();
+    void LmSmLm90Rp();
+    void RpSpRp90Lm();
+    void RmSmRm90Lp();
+
+    void LpRm90SmLm90Rp();
+    void LmRp90SpLp90Rm();
+    void RpLm90SmRm90Lp();
+    void RmLp90SpRp90Lm();
+
+    void add_sort_path( ClassReedSheppPath::pathResult& path );
 
 
     void get_samples_L( const double target_angle_change, double& robot_yaw, double& robotx, double& roboty, ClassReedSheppPath::pathResult& result_container); // const std::string path_type  );
@@ -106,9 +132,9 @@ public:
 
     ClassReedSheppPath::PathCollection all_possible_paths_;
 
-    void setup( std::array<double, 3> start_pose, std::array<double, 3> goal_pose );
+    std::vector<ClassReedSheppPath::pathResult> results_;
 
-    // std::deque< std::array<int,3>> path;
+    void setup( std::array<double, 3> start_pose, std::array<double, 3> goal_pose );
 
     void search( );
 
@@ -146,7 +172,10 @@ void ReedsSheppClass::setup(  std::array<double, 3> start_pose, std::array<doubl
     ccc_alpha_ = rectify_angle_rad( start_pose[2] - theta );
     ccc_beta_  = rectify_angle_rad( goal_pose[2] - theta );
 
-    all_possible_paths_.reset(); 
+    all_possible_paths_.reset();
+    while ( results_.size() > 0 ){
+        results_.pop_back();
+    }
 
     std::cout << "\npaths reset" << std::endl;  
 
@@ -209,17 +238,6 @@ void ReedsSheppClass::search(  )
     LRL_base(  );
     RLR_base(  );
 
-    // LpRmL();
-    // LpRmLp( );
-    // LmRpLm();
-    // RpLmRp();
-    // RmLpRm();
-
-    // LpRmLm();
-    // LmRpLp( );
-    // RpLmRm( );
-    // RmLpRp( );
-
     LpRupLumRm( );
     LmRumLupRp( );
     RpLupRumLm( );
@@ -230,7 +248,59 @@ void ReedsSheppClass::search(  )
     RpLumRumLp( );
     RmLupRupLm( );
 
+    LpRm90SmRm();
+    LmRp90SpRp();
+    RpLm90SmLm();
+    RmLp90SpLp();
+
+    LpRm90SmLm();
+    LmRp90SpLp();
+    RpLm90SmRm();
+    RmLp90SpRp();
+
+    RpSpLp90Rm();
+    RmSmLm90Rp();
+    LpSpRp90Lm();
+    LmSmRm90Lp();
+
+    LpSpLp90Rm();
+    LmSmLm90Rp();
+    RpSpRp90Lm();
+    RmSmRm90Lp();
+
+    LpRm90SmLm90Rp();
+    LmRp90SpLp90Rm();
+    RpLm90SmRm90Lp();
+    RmLp90SpRp90Lm();
+
+    if( results_.size() >= 1){
+        std::cout << "\n\nResults" << std::endl;
+        for( auto p : results_ ){
+            std::cout << p.path_word << "    "  << p.path_length_unitless << std::endl;
+        }
+    } 
+
 }
+
+
+void ReedsSheppClass::add_sort_path( ClassReedSheppPath::pathResult& path )
+{
+    if( results_.size() <= 0) results_.push_back(path);
+    else{
+        double length = path.path_length_unitless;
+        int count = 0;
+        for(auto p : results_){
+            if( p.path_length_unitless > length ){
+                break;
+            }
+            else{
+                count ++;
+            }
+        }
+        results_.insert(  results_.begin()+count, path);
+    }
+}
+
 
 ///////////////////////////   CSC 
 // 8.1 in paper 
@@ -247,10 +317,6 @@ void ReedsSheppClass::LpSpLp_base( double x, double y, double phi, double &t, do
     else{
         valid = false;
     }
-    // valid = true;
-    // std::cout << "phi :" << phi << std::endl;
-    // std::cout << "t :" << t << std::endl;
-    // std::cout << "v :" << v << std::endl;
 }
 
 void ReedsSheppClass::LpSpLp( ){
@@ -270,7 +336,9 @@ void ReedsSheppClass::LpSpLp( ){
         get_samples_L( t, robot_theta, robot_x, robot_y, all_possible_paths_.LpSpLp);
         get_samples_S( u, robot_theta, robot_x, robot_y, all_possible_paths_.LpSpLp);
         get_samples_L( v, robot_theta, robot_x, robot_y, all_possible_paths_.LpSpLp);
+        add_sort_path( all_possible_paths_.LpSpLp );
     }
+    // results_.insert();
 }
 
 
@@ -290,6 +358,7 @@ void ReedsSheppClass::LmSmLm(){
         get_samples_L( -t, robot_theta, robot_x, robot_y, all_possible_paths_.LmSmLm);
         get_samples_S( -u, robot_theta, robot_x, robot_y, all_possible_paths_.LmSmLm);
         get_samples_L( -v, robot_theta, robot_x, robot_y, all_possible_paths_.LmSmLm);
+        add_sort_path( all_possible_paths_.LmSmLm );
     }
 }
 
@@ -311,6 +380,7 @@ void ReedsSheppClass::RpSpRp( ){
         get_samples_R( t, robot_theta, robot_x, robot_y, all_possible_paths_.RpSpRp);
         get_samples_S( u, robot_theta, robot_x, robot_y, all_possible_paths_.RpSpRp);
         get_samples_R( v, robot_theta, robot_x, robot_y, all_possible_paths_.RpSpRp);
+        add_sort_path( all_possible_paths_.RpSpRp );
     }
 }
 
@@ -331,6 +401,7 @@ void ReedsSheppClass::RmSmRm( ){
         get_samples_R( -t, robot_theta, robot_x, robot_y, all_possible_paths_.RmSmRm);
         get_samples_S( -u, robot_theta, robot_x, robot_y, all_possible_paths_.RmSmRm);
         get_samples_R( -v, robot_theta, robot_x, robot_y, all_possible_paths_.RmSmRm);
+        add_sort_path( all_possible_paths_.RmSmRm );
     }
 }
 
@@ -369,6 +440,7 @@ void ReedsSheppClass::LpSpRp( ){
         get_samples_L( t, robot_theta, robot_x, robot_y, all_possible_paths_.LpSpRp);
         get_samples_S( u, robot_theta, robot_x, robot_y, all_possible_paths_.LpSpRp);
         get_samples_R( v, robot_theta, robot_x, robot_y, all_possible_paths_.LpSpRp);
+        add_sort_path( all_possible_paths_.LpSpRp );
     }
 }
 
@@ -388,6 +460,7 @@ void ReedsSheppClass::LmSmRm( ){
         get_samples_L( -t, robot_theta, robot_x, robot_y, all_possible_paths_.LmSmRm);
         get_samples_S( -u, robot_theta, robot_x, robot_y, all_possible_paths_.LmSmRm);
         get_samples_R( -v, robot_theta, robot_x, robot_y, all_possible_paths_.LmSmRm);
+        add_sort_path( all_possible_paths_.LmSmRm );
     }
 }
 
@@ -407,6 +480,7 @@ void ReedsSheppClass::RpSpLp( ){
         get_samples_R( t, robot_theta, robot_x, robot_y, all_possible_paths_.RpSpLp);
         get_samples_S( u, robot_theta, robot_x, robot_y, all_possible_paths_.RpSpLp);
         get_samples_L( v, robot_theta, robot_x, robot_y, all_possible_paths_.RpSpLp);
+        add_sort_path( all_possible_paths_.RpSpLp );
     }
 }
 
@@ -426,6 +500,7 @@ void ReedsSheppClass::RmSmLm( ){
         get_samples_R( -t, robot_theta, robot_x, robot_y, all_possible_paths_.RmSmLm);
         get_samples_S( -u, robot_theta, robot_x, robot_y, all_possible_paths_.RmSmLm);
         get_samples_L( -v, robot_theta, robot_x, robot_y, all_possible_paths_.RmSmLm);
+        add_sort_path( all_possible_paths_.RmSmLm );
     }
 }
 
@@ -438,7 +513,6 @@ void ReedsSheppClass::LRL_base( ){
     double v = rectify_angle_rad(beta) - alpha -t +  rectify_angle_rad(u);
 
     bool valid = false;
-    // double L = std::abs(t) + std::abs(u) + std::abs(v) ;
 
     if( t>=0.0 && u>=0.0 && v>=0.0) valid = true;
     else{
@@ -446,7 +520,7 @@ void ReedsSheppClass::LRL_base( ){
         return;
     } 
 
-    std::cout << "LRL_base  " << valid  << "  " << t << "  " << u << "  " << v   << std::endl;
+    // std::cout << "LRL_base  " << valid  << "  " << t << "  " << u << "  " << v   << std::endl;
 
     double new_t, new_u, new_v;
 
@@ -460,6 +534,7 @@ void ReedsSheppClass::LRL_base( ){
     get_samples_L( new_t, robot_theta, robot_x, robot_y, all_possible_paths_.LpRpLp);
     get_samples_R( new_u, robot_theta, robot_x, robot_y, all_possible_paths_.LpRpLp);
     get_samples_L( new_v, robot_theta, robot_x, robot_y, all_possible_paths_.LpRpLp);
+    add_sort_path( all_possible_paths_.LpRpLp );
 
     all_possible_paths_.LpRpLm.path_word = "LpRpLm";
     all_possible_paths_.LpRpLm.valid = valid;
@@ -471,6 +546,7 @@ void ReedsSheppClass::LRL_base( ){
     get_samples_L( new_t, robot_theta, robot_x, robot_y, all_possible_paths_.LpRpLm);
     get_samples_R( new_u, robot_theta, robot_x, robot_y, all_possible_paths_.LpRpLm);
     get_samples_L( new_v, robot_theta, robot_x, robot_y, all_possible_paths_.LpRpLm);
+    add_sort_path( all_possible_paths_.LpRpLm );
     
     all_possible_paths_.LpRmLp.path_word = "LpRmLp";
     all_possible_paths_.LpRmLp.valid = valid;
@@ -482,6 +558,7 @@ void ReedsSheppClass::LRL_base( ){
     get_samples_L( new_t, robot_theta, robot_x, robot_y, all_possible_paths_.LpRmLp);
     get_samples_R( new_u, robot_theta, robot_x, robot_y, all_possible_paths_.LpRmLp);
     get_samples_L( new_v, robot_theta, robot_x, robot_y, all_possible_paths_.LpRmLp);
+    add_sort_path( all_possible_paths_.LpRmLp );
 
     all_possible_paths_.LpRmLm.path_word = "LpRmLm";
     all_possible_paths_.LpRmLm.valid = valid;
@@ -493,6 +570,7 @@ void ReedsSheppClass::LRL_base( ){
     get_samples_L( new_t, robot_theta, robot_x, robot_y, all_possible_paths_.LpRmLm);
     get_samples_R( new_u, robot_theta, robot_x, robot_y, all_possible_paths_.LpRmLm);
     get_samples_L( new_v, robot_theta, robot_x, robot_y, all_possible_paths_.LpRmLm);
+    add_sort_path( all_possible_paths_.LpRmLm );
 
 
     all_possible_paths_.LmRpLp.path_word = "LmRpLp";
@@ -505,6 +583,7 @@ void ReedsSheppClass::LRL_base( ){
     get_samples_L( new_t, robot_theta, robot_x, robot_y, all_possible_paths_.LmRpLp);
     get_samples_R( new_u, robot_theta, robot_x, robot_y, all_possible_paths_.LmRpLp);
     get_samples_L( new_v, robot_theta, robot_x, robot_y, all_possible_paths_.LmRpLp);
+    add_sort_path( all_possible_paths_.LmRpLp );
 
     all_possible_paths_.LmRpLm.path_word = "LmRpLm";
     all_possible_paths_.LmRpLm.valid = valid;
@@ -516,6 +595,7 @@ void ReedsSheppClass::LRL_base( ){
     get_samples_L( new_t, robot_theta, robot_x, robot_y, all_possible_paths_.LmRpLm);
     get_samples_R( new_u, robot_theta, robot_x, robot_y, all_possible_paths_.LmRpLm);
     get_samples_L( new_v, robot_theta, robot_x, robot_y, all_possible_paths_.LmRpLm);
+    add_sort_path( all_possible_paths_.LmRpLm );
     
     all_possible_paths_.LmRmLp.path_word = "LmRmLp";
     all_possible_paths_.LmRmLp.valid = valid;
@@ -527,6 +607,7 @@ void ReedsSheppClass::LRL_base( ){
     get_samples_L( new_t, robot_theta, robot_x, robot_y, all_possible_paths_.LmRmLp);
     get_samples_R( new_u, robot_theta, robot_x, robot_y, all_possible_paths_.LmRmLp);
     get_samples_L( new_v, robot_theta, robot_x, robot_y, all_possible_paths_.LmRmLp);
+    add_sort_path( all_possible_paths_.LmRmLp );
 
     all_possible_paths_.LmRmLm.path_word = "LmRmLm";
     all_possible_paths_.LmRmLm.valid = valid;
@@ -538,6 +619,7 @@ void ReedsSheppClass::LRL_base( ){
     get_samples_L( new_t, robot_theta, robot_x, robot_y, all_possible_paths_.LmRmLm);
     get_samples_R( new_u, robot_theta, robot_x, robot_y, all_possible_paths_.LmRmLm);
     get_samples_L( new_v, robot_theta, robot_x, robot_y, all_possible_paths_.LmRmLm);
+    add_sort_path( all_possible_paths_.LmRmLm );
 
 }
 
@@ -556,7 +638,7 @@ void ReedsSheppClass::RLR_base( ){
         return;
     } 
 
-    std::cout << "RLR_base  " << valid  << "  " << t << "  " << u << "  " << v   << std::endl;
+    // std::cout << "RLR_base  " << valid  << "  " << t << "  " << u << "  " << v   << std::endl;
 
     double new_t, new_u, new_v;
 
@@ -570,6 +652,7 @@ void ReedsSheppClass::RLR_base( ){
     get_samples_R( new_t, robot_theta, robot_x, robot_y, all_possible_paths_.RpLpRp);
     get_samples_L( new_u, robot_theta, robot_x, robot_y, all_possible_paths_.RpLpRp);
     get_samples_R( new_v, robot_theta, robot_x, robot_y, all_possible_paths_.RpLpRp);
+    add_sort_path( all_possible_paths_.RpLpRp );
 
     all_possible_paths_.RpLpRm.path_word = "RpLpRm";
     all_possible_paths_.RpLpRm.valid = valid;
@@ -581,6 +664,7 @@ void ReedsSheppClass::RLR_base( ){
     get_samples_R( new_t, robot_theta, robot_x, robot_y, all_possible_paths_.RpLpRm);
     get_samples_L( new_u, robot_theta, robot_x, robot_y, all_possible_paths_.RpLpRm);
     get_samples_R( new_v, robot_theta, robot_x, robot_y, all_possible_paths_.RpLpRm);
+    add_sort_path( all_possible_paths_.RpLpRm );
 
     all_possible_paths_.RpLmRp.path_word = "RpLmRp";
     all_possible_paths_.RpLmRp.valid = valid;
@@ -592,6 +676,7 @@ void ReedsSheppClass::RLR_base( ){
     get_samples_R( new_t, robot_theta, robot_x, robot_y, all_possible_paths_.RpLmRp);
     get_samples_L( new_u, robot_theta, robot_x, robot_y, all_possible_paths_.RpLmRp);
     get_samples_R( new_v, robot_theta, robot_x, robot_y, all_possible_paths_.RpLmRp);
+    add_sort_path( all_possible_paths_.RpLmRp );
 
     all_possible_paths_.RpLmRm.path_word = "RpLmRm";
     all_possible_paths_.RpLmRm.valid = valid;
@@ -603,6 +688,7 @@ void ReedsSheppClass::RLR_base( ){
     get_samples_R( new_t, robot_theta, robot_x, robot_y, all_possible_paths_.RpLmRm);
     get_samples_L( new_u, robot_theta, robot_x, robot_y, all_possible_paths_.RpLmRm);
     get_samples_R( new_v, robot_theta, robot_x, robot_y, all_possible_paths_.RpLmRm);
+    add_sort_path( all_possible_paths_.RpLmRm );
 
 
     all_possible_paths_.RmLpRp.path_word = "RmLpRp";
@@ -615,6 +701,7 @@ void ReedsSheppClass::RLR_base( ){
     get_samples_R( new_t, robot_theta, robot_x, robot_y, all_possible_paths_.RmLpRp);
     get_samples_L( new_u, robot_theta, robot_x, robot_y, all_possible_paths_.RmLpRp);
     get_samples_R( new_v, robot_theta, robot_x, robot_y, all_possible_paths_.RmLpRp);
+    add_sort_path( all_possible_paths_.RmLpRp );
 
     all_possible_paths_.RmLpRm.path_word = "RmLpRm";
     all_possible_paths_.RmLpRm.valid = valid;
@@ -626,6 +713,7 @@ void ReedsSheppClass::RLR_base( ){
     get_samples_R( new_t, robot_theta, robot_x, robot_y, all_possible_paths_.RmLpRm);
     get_samples_L( new_u, robot_theta, robot_x, robot_y, all_possible_paths_.RmLpRm);
     get_samples_R( new_v, robot_theta, robot_x, robot_y, all_possible_paths_.RmLpRm);
+    add_sort_path( all_possible_paths_.RmLpRm );
 
     all_possible_paths_.RmLmRp.path_word = "RmLmRp";
     all_possible_paths_.RmLmRp.valid = valid;
@@ -637,6 +725,7 @@ void ReedsSheppClass::RLR_base( ){
     get_samples_R( new_t, robot_theta, robot_x, robot_y, all_possible_paths_.RmLmRp);
     get_samples_L( new_u, robot_theta, robot_x, robot_y, all_possible_paths_.RmLmRp);
     get_samples_R( new_v, robot_theta, robot_x, robot_y, all_possible_paths_.RmLmRp);
+    add_sort_path( all_possible_paths_.RmLmRp );
 
     all_possible_paths_.RmLmRm.path_word = "RmLmRm";
     all_possible_paths_.RmLmRm.valid = valid;
@@ -648,6 +737,7 @@ void ReedsSheppClass::RLR_base( ){
     get_samples_R( new_t, robot_theta, robot_x, robot_y, all_possible_paths_.RmLmRm);
     get_samples_L( new_u, robot_theta, robot_x, robot_y, all_possible_paths_.RmLmRm);
     get_samples_R( new_v, robot_theta, robot_x, robot_y, all_possible_paths_.RmLmRm);
+    add_sort_path( all_possible_paths_.RmLmRm );
 
 }
 
@@ -691,6 +781,7 @@ void ReedsSheppClass::LpRupLumRm( ){
         get_samples_R( u, robot_theta, robot_x, robot_y, all_possible_paths_.LpRupLumRm);
         get_samples_L( -u, robot_theta, robot_x, robot_y, all_possible_paths_.LpRupLumRm);
         get_samples_R( v, robot_theta, robot_x, robot_y, all_possible_paths_.LpRupLumRm);
+        add_sort_path( all_possible_paths_.LpRupLumRm );
     }
     // if(valid) std::cout << "LpRupLumRm  " << valid  << "  t:" << t << "  u:" << u << "  v:" << v << std::endl;
 }
@@ -714,6 +805,7 @@ void ReedsSheppClass::LmRumLupRp( ){
         get_samples_R( -u, robot_theta, robot_x, robot_y, all_possible_paths_.LmRumLupRp);
         get_samples_L( u, robot_theta, robot_x, robot_y, all_possible_paths_.LmRumLupRp);
         get_samples_R( -v, robot_theta, robot_x, robot_y, all_possible_paths_.LmRumLupRp);
+        add_sort_path( all_possible_paths_.LmRumLupRp );
     }
     // if(valid) std::cout << "LmRumLupRp  " << valid  << "  t:" << t << "  u:" << u << "  v:" << v << std::endl;
 }
@@ -737,6 +829,7 @@ void ReedsSheppClass::RpLupRumLm( ){
         get_samples_L( u, robot_theta, robot_x, robot_y, all_possible_paths_.RpLupRumLm);
         get_samples_R( -u, robot_theta, robot_x, robot_y, all_possible_paths_.RpLupRumLm);
         get_samples_L( v, robot_theta, robot_x, robot_y, all_possible_paths_.RpLupRumLm);
+        add_sort_path( all_possible_paths_.RpLupRumLm );
     }
     // if(valid) std::cout << "RpLupRumLm  " << valid  << "  t:" << t << "  u:" << u << "  v:" << v << std::endl;
 }
@@ -760,6 +853,7 @@ void ReedsSheppClass::RmLumRupLp( ){
         get_samples_L( -u, robot_theta, robot_x, robot_y, all_possible_paths_.RmLumRupLp);
         get_samples_R( u, robot_theta, robot_x, robot_y, all_possible_paths_.RmLumRupLp);
         get_samples_L( -v, robot_theta, robot_x, robot_y, all_possible_paths_.RmLumRupLp);
+        add_sort_path( all_possible_paths_.RmLumRupLp );
     }
     // if(valid) std::cout << "RmLumRupLp  " << valid  << "  t:" << t << "  u:" << u << "  v:" << v << std::endl;
 }
@@ -770,34 +864,15 @@ void ReedsSheppClass::LpRumLumRp_base(double x, double y, double phi, double &t,
 {
     double xi = x + sin(phi);
     double eta = y - 1.0 - cos(phi);
-    double rho = (20.0 - xi * xi - eta * eta) / 16.;
+    double rho = (20.0 - xi * xi - eta * eta) / 16.0;
 
-
-    // if ( rho > 1.0 || rho < 0.0 ){
-    //     valid = false;
-    //     return;
-    // }
-    // valid = false;
-    // u = -acos(rho);
-    // if ( std::abs(u) > M_PI*0.5 ){
-    //     valid = false;
-    //     return;
-    // }
-    // tauOmega(u, -u, xi, eta, phi, t, v);
-    // if (t >= 0.0 && v >= 0.0 ){
-    //     valid = true;
-    // }
-    
     valid = false;
-    if (rho >= 0 && rho <= 1)
+    if (rho >= 0.0 && rho <= 1.0)
     {
         u = -acos(rho);
-        if (u >= -.5 * M_PI)
+        if (u >= -0.5 * M_PI)
         {
             tauOmega(u, u, xi, eta, phi, t, v);
-            // assert(fabs(4 * sin(t) - 2 * sin(t - u) - sin(phi) - x) < RS_EPS);
-            // assert(fabs(-4 * cos(t) + 2 * cos(t - u) + cos(phi) + 1 - y) < RS_EPS);
-            // assert(fabs(mod2pi(t - v - phi)) < RS_EPS);
             valid = (t >= 0.0 && v >= 0.0);
         }
     }
@@ -824,6 +899,7 @@ void ReedsSheppClass::LpRumLumRp( )
         get_samples_R( u, robot_theta, robot_x, robot_y, all_possible_paths_.LpRumLumRp);
         get_samples_L( u, robot_theta, robot_x, robot_y, all_possible_paths_.LpRumLumRp);
         get_samples_R( v, robot_theta, robot_x, robot_y, all_possible_paths_.LpRumLumRp);
+        add_sort_path( all_possible_paths_.LpRumLumRp );
     }
     // if(valid) std::cout << "LpRumLumRp  " << valid  << "  t:" << t << "  u:" << u << "  v:" << v << std::endl;
 }
@@ -847,6 +923,7 @@ void ReedsSheppClass::LmRupLupRm( )
         get_samples_R( -u, robot_theta, robot_x, robot_y, all_possible_paths_.LmRupLupRm);
         get_samples_L( -u, robot_theta, robot_x, robot_y, all_possible_paths_.LmRupLupRm);
         get_samples_R( -v, robot_theta, robot_x, robot_y, all_possible_paths_.LmRupLupRm);
+        add_sort_path( all_possible_paths_.LmRupLupRm );
     }
     // if(valid) std::cout << "LmRupLupRm  " << valid  << "  t:" << t << "  u:" << u << "  v:" << v << std::endl;
 }
@@ -870,6 +947,7 @@ void ReedsSheppClass::RpLumRumLp( )
         get_samples_L( u, robot_theta, robot_x, robot_y, all_possible_paths_.RpLumRumLp);
         get_samples_R( u, robot_theta, robot_x, robot_y, all_possible_paths_.RpLumRumLp);
         get_samples_L( v, robot_theta, robot_x, robot_y, all_possible_paths_.RpLumRumLp);
+        add_sort_path( all_possible_paths_.RpLumRumLp );
     }
     // if(valid) std::cout << "RpLumRumLp  " << valid  << "  t:" << t << "  u:" << u << "  v:" << v << std::endl;
 }
@@ -893,22 +971,594 @@ void ReedsSheppClass::RmLupRupLm( )
         get_samples_L( -u, robot_theta, robot_x, robot_y, all_possible_paths_.RmLupRupLm);
         get_samples_R( -u, robot_theta, robot_x, robot_y, all_possible_paths_.RmLupRupLm);
         get_samples_L( -v, robot_theta, robot_x, robot_y, all_possible_paths_.RmLupRupLm);
+        add_sort_path( all_possible_paths_.RmLupRupLm );
     }
     // if(valid) std::cout << "RmLupRupLm  " << valid  << "  t:" << t << "  u:" << u << "  v:" << v << std::endl;
+}
+
+
+void ReedsSheppClass::LpRm90SmLm_base(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid)
+{
+    double xi = x - sin(phi);
+    double eta = y - 1.0 + cos(phi);
+    valid = false;
+    double theta, rho;
+    polar( xi, eta, rho, theta);
+
+    if (rho >= 2.0){
+        double A = sqrt(rho * rho - 4.0);
+        u = 2.0 - A;
+        t = mod2pi(theta + atan2(A, -2.0));
+        v = mod2pi(phi - M_PI/2.0 - t);
+        if( t > 0.0 && u < 0.0 && v < 0.0 ){
+            valid = true;
+            L = std::abs(t) + M_PI/2.0 + std::abs(u) + std::abs(v) ; 
+        }
+        else{
+            valid = false;
+        }
+    }
+    else{
+        valid = false;
+        return;
+    }
+}
+
+
+void ReedsSheppClass::LpRm90SmLm()
+{
+    double x   = goal_pose_processed_[0];
+    double y   = goal_pose_processed_[1];
+    double phi = goal_pose_processed_[2];
+    double t, u, v, L; bool valid;
+    LpRm90SmLm_base( x, y, phi, t, u, v, L, valid);
+    all_possible_paths_.LpRm90SmLm.path_word = "LpRm90SmLm";
+    all_possible_paths_.LpRm90SmLm.valid = valid;
+    if( valid ){
+        all_possible_paths_.LpRm90SmLm.path_length_unitless = L; 
+        double robot_x     = start_pose_[0] ;
+        double robot_y     = start_pose_[1] ;
+        double robot_theta = start_pose_[2] ;
+        get_samples_L( t, robot_theta, robot_x, robot_y, all_possible_paths_.LpRm90SmLm);
+        get_samples_R( -M_PI/2.0, robot_theta, robot_x, robot_y, all_possible_paths_.LpRm90SmLm);
+        get_samples_S( u, robot_theta, robot_x, robot_y, all_possible_paths_.LpRm90SmLm);
+        get_samples_L( v, robot_theta, robot_x, robot_y, all_possible_paths_.LpRm90SmLm);
+        add_sort_path( all_possible_paths_.LpRm90SmLm );
+    }
+    if(valid) std::cout << "LpRm90SmLm  " << valid  << "  t:" << t << "  u:" << u << "  v:" << v << std::endl;
+}
+
+
+
+void ReedsSheppClass::LmRp90SpLp()
+{
+    double x   = goal_pose_processed_[0];
+    double y   = goal_pose_processed_[1];
+    double phi = goal_pose_processed_[2];
+    double t, u, v, L; bool valid;
+    LpRm90SmLm_base( -x, y, -phi, t, u, v, L, valid);
+    all_possible_paths_.LmRp90SpLp.path_word = "LmRp90SpLp";
+    all_possible_paths_.LmRp90SpLp.valid = valid;
+    if( valid ){
+        all_possible_paths_.LmRp90SpLp.path_length_unitless = L; 
+        double robot_x     = start_pose_[0] ;
+        double robot_y     = start_pose_[1] ;
+        double robot_theta = start_pose_[2] ;
+        get_samples_L( -t, robot_theta, robot_x, robot_y, all_possible_paths_.LmRp90SpLp);
+        get_samples_R( M_PI/2.0, robot_theta, robot_x, robot_y, all_possible_paths_.LmRp90SpLp);
+        get_samples_S( -u, robot_theta, robot_x, robot_y, all_possible_paths_.LmRp90SpLp);
+        get_samples_L( -v, robot_theta, robot_x, robot_y, all_possible_paths_.LmRp90SpLp);
+        add_sort_path( all_possible_paths_.LmRp90SpLp );
+    }
+    if(valid) std::cout << "LmRp90SpLp  " << valid  << "  t:" << t << "  u:" << u << "  v:" << v << std::endl;
+}
+
+void ReedsSheppClass::RpLm90SmRm()
+{
+    double x   = goal_pose_processed_[0];
+    double y   = goal_pose_processed_[1];
+    double phi = goal_pose_processed_[2];
+    double t, u, v, L; bool valid;
+    LpRm90SmLm_base( x, -y, -phi, t, u, v, L, valid);
+    all_possible_paths_.RpLm90SmRm.path_word = "RpLm90SmRm";
+    all_possible_paths_.RpLm90SmRm.valid = valid;
+    if( valid ){
+        all_possible_paths_.RpLm90SmRm.path_length_unitless = L; 
+        double robot_x     = start_pose_[0] ;
+        double robot_y     = start_pose_[1] ;
+        double robot_theta = start_pose_[2] ;
+        get_samples_R( t, robot_theta, robot_x, robot_y, all_possible_paths_.RpLm90SmRm);
+        get_samples_L( -M_PI/2.0, robot_theta, robot_x, robot_y, all_possible_paths_.RpLm90SmRm);
+        get_samples_S( u, robot_theta, robot_x, robot_y, all_possible_paths_.RpLm90SmRm);
+        get_samples_R( v, robot_theta, robot_x, robot_y, all_possible_paths_.RpLm90SmRm);
+        add_sort_path( all_possible_paths_.RpLm90SmRm );
+    }
+    if(valid) std::cout << "RpLm90SmRm  " << valid  << "  t:" << t << "  u:" << u << "  v:" << v << std::endl;
+}
+
+void ReedsSheppClass::RmLp90SpRp()
+{
+    double x   = goal_pose_processed_[0];
+    double y   = goal_pose_processed_[1];
+    double phi = goal_pose_processed_[2];
+    double t, u, v, L; bool valid;
+    LpRm90SmLm_base( -x, -y, phi, t, u, v, L, valid);
+    all_possible_paths_.RmLp90SpRp.path_word = "RmLp90SpRp";
+    all_possible_paths_.RmLp90SpRp.valid = valid;
+    if( valid ){
+        all_possible_paths_.RmLp90SpRp.path_length_unitless = L; 
+        double robot_x     = start_pose_[0] ;
+        double robot_y     = start_pose_[1] ;
+        double robot_theta = start_pose_[2] ;
+        get_samples_R( -t, robot_theta, robot_x, robot_y, all_possible_paths_.RmLp90SpRp);
+        get_samples_L( M_PI/2.0, robot_theta, robot_x, robot_y, all_possible_paths_.RmLp90SpRp);
+        get_samples_S( -u, robot_theta, robot_x, robot_y, all_possible_paths_.RmLp90SpRp);
+        get_samples_R( -v, robot_theta, robot_x, robot_y, all_possible_paths_.RmLp90SpRp);
+        add_sort_path( all_possible_paths_.RmLp90SpRp );
+    }
+    if(valid) std::cout << "RmLp90SpRp  " << valid  << "  t:" << t << "  u:" << u << "  v:" << v << std::endl;
 }
 
 
 
 
 
+void ReedsSheppClass::LpRm90SmRm_base(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid)
+{
+    double xi = x + sin(phi), eta = y - 1. - cos(phi), rho, theta;
+    polar(-eta, xi, rho, theta);
+    if (rho >= 2.)
+    {
+        t = theta;
+        u = 2. - rho;
+        v = mod2pi(t + .5 * M_PI - phi);
+
+        if (t >= 0.0 && u <= 0.0 && v <= 0.0){
+            valid = true;
+            L = std::abs(t) + M_PI/2.0 + std::abs(u) + std::abs(v) ; 
+        }
+        else{
+            valid = false;
+        }
+    }
+    else{
+        valid = false;
+    }
+
+}
+
+
+void ReedsSheppClass::LpRm90SmRm()
+{
+    double x   = goal_pose_processed_[0];
+    double y   = goal_pose_processed_[1];
+    double phi = goal_pose_processed_[2];
+    double t, u, v, L; bool valid;
+    LpRm90SmRm_base( x, y, phi, t, u, v, L, valid);
+    all_possible_paths_.LpRm90SmRm.path_word = "LpRm90SmRm";
+    all_possible_paths_.LpRm90SmRm.valid = valid;
+    if( valid ){
+        all_possible_paths_.LpRm90SmRm.path_length_unitless = L; 
+        double robot_x     = start_pose_[0] ;
+        double robot_y     = start_pose_[1] ;
+        double robot_theta = start_pose_[2] ;
+        get_samples_L( t, robot_theta, robot_x, robot_y, all_possible_paths_.LpRm90SmRm);
+        get_samples_R( -M_PI/2.0, robot_theta, robot_x, robot_y, all_possible_paths_.LpRm90SmRm);
+        get_samples_S( u, robot_theta, robot_x, robot_y, all_possible_paths_.LpRm90SmRm);
+        get_samples_R( v, robot_theta, robot_x, robot_y, all_possible_paths_.LpRm90SmRm);
+        add_sort_path( all_possible_paths_.LpRm90SmRm );
+    }
+    if(valid) std::cout << "LpRm90SmRm  " << valid  << "  t:" << t << "  u:" << u << "  v:" << v << std::endl;
+}
+
+void ReedsSheppClass::LmRp90SpRp()
+{
+    double x   = goal_pose_processed_[0];
+    double y   = goal_pose_processed_[1];
+    double phi = goal_pose_processed_[2];
+    double t, u, v, L; bool valid;
+    LpRm90SmRm_base( -x, y, -phi, t, u, v, L, valid);
+    all_possible_paths_.LmRp90SpRp.path_word = "LmRp90SpRp";
+    all_possible_paths_.LmRp90SpRp.valid = valid;
+    if( valid ){
+        all_possible_paths_.LmRp90SpRp.path_length_unitless = L; 
+        double robot_x     = start_pose_[0] ;
+        double robot_y     = start_pose_[1] ;
+        double robot_theta = start_pose_[2] ;
+        get_samples_L( -t, robot_theta, robot_x, robot_y, all_possible_paths_.LmRp90SpRp);
+        get_samples_R( M_PI/2.0, robot_theta, robot_x, robot_y, all_possible_paths_.LmRp90SpRp);
+        get_samples_S( -u, robot_theta, robot_x, robot_y, all_possible_paths_.LmRp90SpRp);
+        get_samples_R( -v, robot_theta, robot_x, robot_y, all_possible_paths_.LmRp90SpRp);
+        add_sort_path( all_possible_paths_.LmRp90SpRp );
+    }
+    if(valid) std::cout << "LmRp90SpRp  " << valid  << "  t:" << t << "  u:" << u << "  v:" << v << std::endl;
+}
+
+void ReedsSheppClass::RpLm90SmLm()
+{
+    double x   = goal_pose_processed_[0];
+    double y   = goal_pose_processed_[1];
+    double phi = goal_pose_processed_[2];
+    double t, u, v, L; bool valid;
+    LpRm90SmRm_base( x, -y, -phi, t, u, v, L, valid);
+    all_possible_paths_.RpLm90SmLm.path_word = "RpLm90SmLm";
+    all_possible_paths_.RpLm90SmLm.valid = valid;
+    if( valid ){
+        all_possible_paths_.RpLm90SmLm.path_length_unitless = L; 
+        double robot_x     = start_pose_[0] ;
+        double robot_y     = start_pose_[1] ;
+        double robot_theta = start_pose_[2] ;
+        get_samples_R( t, robot_theta, robot_x, robot_y, all_possible_paths_.RpLm90SmLm);
+        get_samples_L( -M_PI/2.0, robot_theta, robot_x, robot_y, all_possible_paths_.RpLm90SmLm);
+        get_samples_S( u, robot_theta, robot_x, robot_y, all_possible_paths_.RpLm90SmLm);
+        get_samples_L( v, robot_theta, robot_x, robot_y, all_possible_paths_.RpLm90SmLm);
+        add_sort_path( all_possible_paths_.RpLm90SmLm );
+    }
+    if(valid) std::cout << "RpLm90SmLm  " << valid  << "  t:" << t << "  u:" << u << "  v:" << v << std::endl;
+}
+
+void ReedsSheppClass::RmLp90SpLp()
+{
+    double x   = goal_pose_processed_[0];
+    double y   = goal_pose_processed_[1];
+    double phi = goal_pose_processed_[2];
+    double t, u, v, L; bool valid;
+    LpRm90SmRm_base( -x, -y, phi, t, u, v, L, valid);
+    all_possible_paths_.RmLp90SpLp.path_word = "RmLp90SpLp";
+    all_possible_paths_.RmLp90SpLp.valid = valid;
+    if( valid ){
+        all_possible_paths_.RmLp90SpLp.path_length_unitless = L; 
+        double robot_x     = start_pose_[0] ;
+        double robot_y     = start_pose_[1] ;
+        double robot_theta = start_pose_[2] ;
+        get_samples_R( -t, robot_theta, robot_x, robot_y, all_possible_paths_.RmLp90SpLp);
+        get_samples_L( M_PI/2.0, robot_theta, robot_x, robot_y, all_possible_paths_.RmLp90SpLp);
+        get_samples_S( -u, robot_theta, robot_x, robot_y, all_possible_paths_.RmLp90SpLp);
+        get_samples_L( -v, robot_theta, robot_x, robot_y, all_possible_paths_.RmLp90SpLp);
+        add_sort_path( all_possible_paths_.RmLp90SpLp );
+    }
+    if(valid) std::cout << "RmLp90SpLp  " << valid  << "  t:" << t << "  u:" << u << "  v:" << v << std::endl;
+}
+
+
+
+void ReedsSheppClass::LmSmRm90Lp()
+{
+    double x   = goal_pose_processed_[0];
+    double y   = goal_pose_processed_[1];
+    double phi = goal_pose_processed_[2];
+    double t, u, v, L; bool valid;
+    double xb = x * cos(phi) + y * sin(phi);
+    double yb = x * sin(phi) - y * cos(phi);
+    LpRm90SmLm_base( xb, yb, phi, t, u, v, L, valid);
+    all_possible_paths_.LmSmRm90Lp.path_word = "LmSmRm90Lp";
+    all_possible_paths_.LmSmRm90Lp.valid = valid;
+    if( valid ){
+        all_possible_paths_.LmSmRm90Lp.path_length_unitless = L; 
+        double robot_x     = start_pose_[0] ;
+        double robot_y     = start_pose_[1] ;
+        double robot_theta = start_pose_[2] ;
+        get_samples_L( v, robot_theta, robot_x, robot_y, all_possible_paths_.LmSmRm90Lp);
+        get_samples_S( u, robot_theta, robot_x, robot_y, all_possible_paths_.LmSmRm90Lp);
+        get_samples_R( -M_PI/2.0, robot_theta, robot_x, robot_y, all_possible_paths_.LmSmRm90Lp);
+        get_samples_L( t, robot_theta, robot_x, robot_y, all_possible_paths_.LmSmRm90Lp);
+        add_sort_path( all_possible_paths_.LmSmRm90Lp );
+    }
+    if(valid) std::cout << "LmSmRm90Lp  " << valid  << "  t:" << t << "  u:" << u << "  v:" << v << std::endl;
+}
+
+
+void ReedsSheppClass::LpSpRp90Lm()
+{
+    double x   = goal_pose_processed_[0];
+    double y   = goal_pose_processed_[1];
+    double phi = goal_pose_processed_[2];
+    double t, u, v, L; bool valid;
+    double xb = x * cos(phi) + y * sin(phi);
+    double yb = x * sin(phi) - y * cos(phi);
+    LpRm90SmLm_base( -xb, yb, -phi, t, u, v, L, valid);
+    all_possible_paths_.LpSpRp90Lm.path_word = "LpSpRp90Lm";
+    all_possible_paths_.LpSpRp90Lm.valid = valid;
+    if( valid ){
+        all_possible_paths_.LpSpRp90Lm.path_length_unitless = L; 
+        double robot_x     = start_pose_[0] ;
+        double robot_y     = start_pose_[1] ;
+        double robot_theta = start_pose_[2] ;
+        get_samples_L( -v, robot_theta, robot_x, robot_y, all_possible_paths_.LpSpRp90Lm);
+        get_samples_S( -u, robot_theta, robot_x, robot_y, all_possible_paths_.LpSpRp90Lm);
+        get_samples_R( M_PI/2.0, robot_theta, robot_x, robot_y, all_possible_paths_.LpSpRp90Lm);
+        get_samples_L( -t, robot_theta, robot_x, robot_y, all_possible_paths_.LpSpRp90Lm);
+        add_sort_path( all_possible_paths_.LpSpRp90Lm );
+    }
+    if(valid) std::cout << "LpSpRp90Lm  " << valid  << "  t:" << t << "  u:" << u << "  v:" << v << std::endl;
+}
+
+
+void ReedsSheppClass::RmSmLm90Rp()
+{
+    double x   = goal_pose_processed_[0];
+    double y   = goal_pose_processed_[1];
+    double phi = goal_pose_processed_[2];
+    double t, u, v, L; bool valid;
+    double xb = x * cos(phi) + y * sin(phi);
+    double yb = x * sin(phi) - y * cos(phi);
+    LpRm90SmLm_base( xb, -yb, -phi, t, u, v, L, valid);
+    all_possible_paths_.RmSmLm90Rp.path_word = "RmSmLm90Rp";
+    all_possible_paths_.RmSmLm90Rp.valid = valid;
+    if( valid ){
+        all_possible_paths_.RmSmLm90Rp.path_length_unitless = L; 
+        double robot_x     = start_pose_[0] ;
+        double robot_y     = start_pose_[1] ;
+        double robot_theta = start_pose_[2] ;
+        get_samples_R( v, robot_theta, robot_x, robot_y, all_possible_paths_.RmSmLm90Rp);
+        get_samples_S( u, robot_theta, robot_x, robot_y, all_possible_paths_.RmSmLm90Rp);
+        get_samples_L( -M_PI/2.0, robot_theta, robot_x, robot_y, all_possible_paths_.RmSmLm90Rp);
+        get_samples_R( t, robot_theta, robot_x, robot_y, all_possible_paths_.RmSmLm90Rp);
+        add_sort_path( all_possible_paths_.RmSmLm90Rp );
+    }
+    if(valid) std::cout << "RmSmLm90Rp  " << valid  << "  t:" << t << "  u:" << u << "  v:" << v << std::endl;
+}
+
+
+void ReedsSheppClass::RpSpLp90Rm()
+{
+    double x   = goal_pose_processed_[0];
+    double y   = goal_pose_processed_[1];
+    double phi = goal_pose_processed_[2];
+    double t, u, v, L; bool valid;
+    double xb = x * cos(phi) + y * sin(phi);
+    double yb = x * sin(phi) - y * cos(phi);
+    LpRm90SmLm_base( -xb, -yb, phi, t, u, v, L, valid);
+    all_possible_paths_.RpSpLp90Rm.path_word = "RpSpLp90Rm";
+    all_possible_paths_.RpSpLp90Rm.valid = valid;
+    if( valid ){
+        all_possible_paths_.RpSpLp90Rm.path_length_unitless = L; 
+        double robot_x     = start_pose_[0] ;
+        double robot_y     = start_pose_[1] ;
+        double robot_theta = start_pose_[2] ;
+        get_samples_R( -v, robot_theta, robot_x, robot_y, all_possible_paths_.RpSpLp90Rm);
+        get_samples_S( -u, robot_theta, robot_x, robot_y, all_possible_paths_.RpSpLp90Rm);
+        get_samples_L( M_PI/2.0, robot_theta, robot_x, robot_y, all_possible_paths_.RpSpLp90Rm);
+        get_samples_R( -t, robot_theta, robot_x, robot_y, all_possible_paths_.RpSpLp90Rm);
+        add_sort_path( all_possible_paths_.RpSpLp90Rm );
+    }
+    if(valid) std::cout << "RpSpLp90Rm  " << valid  << "  t:" << t << "  u:" << u << "  v:" << v << std::endl;
+}
+
+
+
+void ReedsSheppClass::RmSmRm90Lp()
+{
+    double x   = goal_pose_processed_[0];
+    double y   = goal_pose_processed_[1];
+    double phi = goal_pose_processed_[2];
+    double t, u, v, L; bool valid;
+    double xb = x * cos(phi) + y * sin(phi);
+    double yb = x * sin(phi) - y * cos(phi);
+    LpRm90SmRm_base( xb, yb, phi, t, u, v, L, valid);
+    all_possible_paths_.RmSmRm90Lp.path_word = "RmSmRm90Lp";
+    all_possible_paths_.RmSmRm90Lp.valid = valid;
+    if( valid ){
+        all_possible_paths_.RmSmRm90Lp.path_length_unitless = L; 
+        double robot_x     = start_pose_[0] ;
+        double robot_y     = start_pose_[1] ;
+        double robot_theta = start_pose_[2] ;
+        get_samples_R( v, robot_theta, robot_x, robot_y, all_possible_paths_.RmSmRm90Lp);
+        get_samples_S( u, robot_theta, robot_x, robot_y, all_possible_paths_.RmSmRm90Lp);
+        get_samples_R( -M_PI/2.0, robot_theta, robot_x, robot_y, all_possible_paths_.RmSmRm90Lp);
+        get_samples_L( t, robot_theta, robot_x, robot_y, all_possible_paths_.RmSmRm90Lp);
+        add_sort_path( all_possible_paths_.RmSmRm90Lp );
+    }
+    if(valid) std::cout << "RmSmRm90Lp  " << valid  << "  t:" << t << "  u:" << u << "  v:" << v << std::endl;
+}
+
+void ReedsSheppClass::RpSpRp90Lm()
+{
+    double x   = goal_pose_processed_[0];
+    double y   = goal_pose_processed_[1];
+    double phi = goal_pose_processed_[2];
+    double t, u, v, L; bool valid;
+    double xb = x * cos(phi) + y * sin(phi);
+    double yb = x * sin(phi) - y * cos(phi);
+    LpRm90SmRm_base( -xb, yb, -phi, t, u, v, L, valid);
+    all_possible_paths_.RpSpRp90Lm.path_word = "RpSpRp90Lm";
+    all_possible_paths_.RpSpRp90Lm.valid = valid;
+    if( valid ){
+        all_possible_paths_.RpSpRp90Lm.path_length_unitless = L; 
+        double robot_x     = start_pose_[0] ;
+        double robot_y     = start_pose_[1] ;
+        double robot_theta = start_pose_[2] ;
+        get_samples_R( -v, robot_theta, robot_x, robot_y, all_possible_paths_.RpSpRp90Lm);
+        get_samples_S( -u, robot_theta, robot_x, robot_y, all_possible_paths_.RpSpRp90Lm);
+        get_samples_R( M_PI/2.0, robot_theta, robot_x, robot_y, all_possible_paths_.RpSpRp90Lm);
+        get_samples_L( -t, robot_theta, robot_x, robot_y, all_possible_paths_.RpSpRp90Lm);
+        add_sort_path( all_possible_paths_.RpSpRp90Lm );
+    }
+    if(valid) std::cout << "RpSpRp90Lm  " << valid  << "  t:" << t << "  u:" << u << "  v:" << v << std::endl;
+}
+
+void ReedsSheppClass::LmSmLm90Rp()
+{
+    double x   = goal_pose_processed_[0];
+    double y   = goal_pose_processed_[1];
+    double phi = goal_pose_processed_[2];
+    double t, u, v, L; bool valid;
+    double xb = x * cos(phi) + y * sin(phi);
+    double yb = x * sin(phi) - y * cos(phi);
+    LpRm90SmRm_base( xb, -yb, -phi, t, u, v, L, valid);
+    all_possible_paths_.LmSmLm90Rp.path_word = "LmSmLm90Rp";
+    all_possible_paths_.LmSmLm90Rp.valid = valid;
+    if( valid ){
+        all_possible_paths_.LmSmLm90Rp.path_length_unitless = L; 
+        double robot_x     = start_pose_[0] ;
+        double robot_y     = start_pose_[1] ;
+        double robot_theta = start_pose_[2] ;
+        get_samples_L( v, robot_theta, robot_x, robot_y, all_possible_paths_.LmSmLm90Rp);
+        get_samples_S( u, robot_theta, robot_x, robot_y, all_possible_paths_.LmSmLm90Rp);
+        get_samples_L( -M_PI/2.0, robot_theta, robot_x, robot_y, all_possible_paths_.LmSmLm90Rp);
+        get_samples_R( t, robot_theta, robot_x, robot_y, all_possible_paths_.LmSmLm90Rp);
+        add_sort_path( all_possible_paths_.LmSmLm90Rp );
+    }
+    if(valid) std::cout << "LmSmLm90Rp  " << valid  << "  t:" << t << "  u:" << u << "  v:" << v << std::endl;
+}
+
+
+
+void ReedsSheppClass::LpSpLp90Rm()
+{
+    double x   = goal_pose_processed_[0];
+    double y   = goal_pose_processed_[1];
+    double phi = goal_pose_processed_[2];
+    double t, u, v, L; bool valid;
+    double xb = x * cos(phi) + y * sin(phi);
+    double yb = x * sin(phi) - y * cos(phi);
+    LpRm90SmRm_base( -xb, -yb, phi, t, u, v, L, valid);
+    all_possible_paths_.LpSpLp90Rm.path_word = "LpSpLp90Rm";
+    all_possible_paths_.LpSpLp90Rm.valid = valid;
+    if( valid ){
+        all_possible_paths_.LpSpLp90Rm.path_length_unitless = L; 
+        double robot_x     = start_pose_[0] ;
+        double robot_y     = start_pose_[1] ;
+        double robot_theta = start_pose_[2] ;
+        get_samples_L( -v, robot_theta, robot_x, robot_y, all_possible_paths_.LpSpLp90Rm);
+        get_samples_S( -u, robot_theta, robot_x, robot_y, all_possible_paths_.LpSpLp90Rm);
+        get_samples_L( M_PI/2.0, robot_theta, robot_x, robot_y, all_possible_paths_.LpSpLp90Rm);
+        get_samples_R( -t, robot_theta, robot_x, robot_y, all_possible_paths_.LpSpLp90Rm);
+        add_sort_path( all_possible_paths_.LpSpLp90Rm );
+    }
+    if(valid) std::cout << "LpSpLp90Rm  " << valid  << "  t:" << t << "  u:" << u << "  v:" << v << std::endl;
+}
 
 
 
 
+void ReedsSheppClass::LpRm90SmLm90Rp_base(double x, double y, double phi, double &t, double &u, double &v, double& L, bool& valid)
+{
+    double xi = x + sin(phi);
+    double eta = y - 1.0 - cos(phi);
+    double rho, theta;
+    polar(xi, eta, rho, theta);
+    if (rho < 2.0){
+        valid = false;
+        return;
+    }
+    u = 4.0 - sqrt(rho * rho - 4.0);
+    if (u <= 0.0){
+        t = mod2pi(atan2((4 - u) * xi - 2 * eta, -2 * xi + (u - 4) * eta));
+        v = mod2pi(t - phi);
+        if (t >= 0.0 && v >= 0.0){
+            valid = true;
+            L = std::abs(t) + M_PI + std::abs(u) + std::abs(v) ; 
+        }
+        else{
+            valid= false;
+            return;
+        }
+    }
+    else{
+        valid = false;
+        return;
+    }
+
+}
 
 
 
+void ReedsSheppClass::LpRm90SmLm90Rp()
+{
+    double x   = goal_pose_processed_[0];
+    double y   = goal_pose_processed_[1];
+    double phi = goal_pose_processed_[2];
+    double t, u, v, L; bool valid;
+    LpRm90SmLm90Rp_base( x, y, phi, t, u, v, L, valid);
+    all_possible_paths_.LpRm90SmLm90Rp.path_word = "LpRm90SmLm90Rp";
+    all_possible_paths_.LpRm90SmLm90Rp.valid = valid;
+    if( valid ){
+        all_possible_paths_.LpRm90SmLm90Rp.path_length_unitless = L; 
+        double robot_x     = start_pose_[0] ;
+        double robot_y     = start_pose_[1] ;
+        double robot_theta = start_pose_[2] ;
+        get_samples_L( t, robot_theta, robot_x, robot_y, all_possible_paths_.LpRm90SmLm90Rp);
+        get_samples_R( -M_PI/2.0, robot_theta, robot_x, robot_y, all_possible_paths_.LpRm90SmLm90Rp);
+        get_samples_S( u, robot_theta, robot_x, robot_y, all_possible_paths_.LpRm90SmLm90Rp);
+        get_samples_L( -M_PI/2.0, robot_theta, robot_x, robot_y, all_possible_paths_.LpRm90SmLm90Rp);
+        get_samples_R( v, robot_theta, robot_x, robot_y, all_possible_paths_.LpRm90SmLm90Rp);
+        add_sort_path( all_possible_paths_.LpRm90SmLm90Rp );
+    }
+    if(valid) std::cout << "LpRm90SmLm90Rp  " << valid  << "  t:" << t << "  u:" << u << "  v:" << v << std::endl;
+}
 
+void ReedsSheppClass::LmRp90SpLp90Rm()
+{
+    double x   = goal_pose_processed_[0];
+    double y   = goal_pose_processed_[1];
+    double phi = goal_pose_processed_[2];
+    double t, u, v, L; bool valid;
+    LpRm90SmLm90Rp_base( -x, y, -phi, t, u, v, L, valid);
+    all_possible_paths_.LmRp90SpLp90Rm.path_word = "LmRp90SpLp90Rm";
+    all_possible_paths_.LmRp90SpLp90Rm.valid = valid;
+    if( valid ){
+        all_possible_paths_.LmRp90SpLp90Rm.path_length_unitless = L; 
+        double robot_x     = start_pose_[0] ;
+        double robot_y     = start_pose_[1] ;
+        double robot_theta = start_pose_[2] ;
+        get_samples_L( -t, robot_theta, robot_x, robot_y, all_possible_paths_.LmRp90SpLp90Rm);
+        get_samples_R( M_PI/2.0, robot_theta, robot_x, robot_y, all_possible_paths_.LmRp90SpLp90Rm);
+        get_samples_S( -u, robot_theta, robot_x, robot_y, all_possible_paths_.LmRp90SpLp90Rm);
+        get_samples_L( M_PI/2.0, robot_theta, robot_x, robot_y, all_possible_paths_.LmRp90SpLp90Rm);
+        get_samples_R( -v, robot_theta, robot_x, robot_y, all_possible_paths_.LmRp90SpLp90Rm);
+        add_sort_path( all_possible_paths_.LmRp90SpLp90Rm );
+    }
+    if(valid) std::cout << "LmRp90SpLp90Rm  " << valid  << "  t:" << t << "  u:" << u << "  v:" << v << std::endl;
+}
+
+void ReedsSheppClass::RpLm90SmRm90Lp()
+{
+    double x   = goal_pose_processed_[0];
+    double y   = goal_pose_processed_[1];
+    double phi = goal_pose_processed_[2];
+    double t, u, v, L; bool valid;
+    LpRm90SmLm90Rp_base( x, -y, -phi, t, u, v, L, valid);
+    all_possible_paths_.RpLm90SmRm90Lp.path_word = "RpLm90SmRm90Lp";
+    all_possible_paths_.RpLm90SmRm90Lp.valid = valid;
+    if( valid ){
+        all_possible_paths_.RpLm90SmRm90Lp.path_length_unitless = L; 
+        double robot_x     = start_pose_[0] ;
+        double robot_y     = start_pose_[1] ;
+        double robot_theta = start_pose_[2] ;
+        get_samples_R( t, robot_theta, robot_x, robot_y, all_possible_paths_.RpLm90SmRm90Lp);
+        get_samples_L( -M_PI/2.0, robot_theta, robot_x, robot_y, all_possible_paths_.RpLm90SmRm90Lp);
+        get_samples_S( u, robot_theta, robot_x, robot_y, all_possible_paths_.RpLm90SmRm90Lp);
+        get_samples_R( -M_PI/2.0, robot_theta, robot_x, robot_y, all_possible_paths_.RpLm90SmRm90Lp);
+        get_samples_L( v, robot_theta, robot_x, robot_y, all_possible_paths_.RpLm90SmRm90Lp);
+        add_sort_path( all_possible_paths_.RpLm90SmRm90Lp );
+    }
+    if(valid) std::cout << "RpLm90SmRm90Lp  " << valid  << "  t:" << t << "  u:" << u << "  v:" << v << std::endl;
+}
+
+void ReedsSheppClass::RmLp90SpRp90Lm()
+{
+    double x   = goal_pose_processed_[0];
+    double y   = goal_pose_processed_[1];
+    double phi = goal_pose_processed_[2];
+    double t, u, v, L; bool valid;
+    LpRm90SmLm90Rp_base( -x, -y, phi, t, u, v, L, valid);
+    all_possible_paths_.RmLp90SpRp90Lm.path_word = "RmLp90SpRp90Lm";
+    all_possible_paths_.RmLp90SpRp90Lm.valid = valid;
+    if( valid ){
+        all_possible_paths_.RmLp90SpRp90Lm.path_length_unitless = L; 
+        double robot_x     = start_pose_[0] ;
+        double robot_y     = start_pose_[1] ;
+        double robot_theta = start_pose_[2] ;
+        get_samples_R( -t, robot_theta, robot_x, robot_y, all_possible_paths_.RmLp90SpRp90Lm);
+        get_samples_L( M_PI/2.0, robot_theta, robot_x, robot_y, all_possible_paths_.RmLp90SpRp90Lm);
+        get_samples_S( -u, robot_theta, robot_x, robot_y, all_possible_paths_.RmLp90SpRp90Lm);
+        get_samples_R( M_PI/2.0, robot_theta, robot_x, robot_y, all_possible_paths_.RmLp90SpRp90Lm);
+        get_samples_L( -v, robot_theta, robot_x, robot_y, all_possible_paths_.RmLp90SpRp90Lm);
+        add_sort_path( all_possible_paths_.RmLp90SpRp90Lm );
+    }
+    if(valid) std::cout << "RmLp90SpRp90Lm  " << valid  << "  t:" << t << "  u:" << u << "  v:" << v << std::endl;
+}
 
 
 
@@ -978,63 +1628,11 @@ void ReedsSheppClass::get_samples_R( const double target_angle_change, double& r
         theta_change += ang_step_size_local;
         robot_yaw += ang_step_size_local ;
         ClassReedSheppPath::posePerSample pose(robotx, roboty, robot_yaw);
-        // all_path_result[path_type].path_steps.push_back(pose);
         result_container.path_steps.push_back(pose);
     }
     init_yaw -= target_angle_change;
     robot_yaw = mod2pi( init_yaw );
 
-
-    // if(target_angle_change > 0){
-    //     double theta_change = 0;
-    //     while (theta_change < target_angle_change)
-    //         {
-    //             double dx = v_l * cos( robot_yaw + angular_step_size/2);
-    //             double dy = v_l * sin( robot_yaw + angular_step_size/2);
-    //             robotx = robotx + (dx);
-    //             roboty = roboty + (dy);
-    //             theta_change += angular_step_size;
-    //             robot_yaw -= angular_step_size ;
-
-    //             ClassReedSheppPath::posePerSample pose(robotx, roboty, robot_yaw);
-    //             // all_path_result[path_type].path_steps.push_back(pose);
-    //             result_container.path_steps.push_back(pose);
-
-    //             // std::cout << " raius " << turning_raius ;
-    //             // std::cout << "  robot_theta "  << int(robot_theta*180.0/M_PI) ;
-    //             // std::cout << "  x " << robot_x << " y " << robot_y ;
-    //             // std::cout << "  angular_step_size " << angular_step_size  ;
-    //             // std::cout << "  theta_change " << theta_change  ;
-    //             // std::cout << "  dx " << dx << " dy " << dy << std::endl;
-    //             // std::cout << robot_theta*180.0/M_PI << " " << robot_x << " " << robot_y << " " << v_l  << " " << dx << " " << dy << std::endl;
-    //         }
-    // }
-    // if(target_angle_change < 0){
-    //     double theta_change = 0;
-    //     while (theta_change > target_angle_change)
-    //         {
-    //             double dx = v_l * cos( robot_yaw - angular_step_size/2);
-    //             double dy = v_l * sin( robot_yaw - angular_step_size/2);
-    //             robotx = robotx - (dx);
-    //             roboty = roboty - (dy);
-    //             theta_change -= angular_step_size;
-    //             robot_yaw += angular_step_size ;
-
-    //             // cv::circle(map_for_view, cv::Point(robotx, roboty), 1, cv::Scalar(0,255,0),  -1);
-
-    //             ClassReedSheppPath::posePerSample pose(robotx, roboty, robot_yaw);
-    //             // all_path_result[path_type].path_steps.push_back(pose);
-    //             result_container.path_steps.push_back(pose);
-
-    //             // std::cout << " raius " << turning_raius ;
-    //             // std::cout << "  robot_theta "  << int(robot_theta*180.0/M_PI) ;
-    //             // std::cout << "  x " << robot_x << " y " << robot_y ;
-    //             // std::cout << "  angular_step_size " << angular_step_size  ;
-    //             // std::cout << "  theta_change " << theta_change  ;
-    //             // std::cout << "  dx " << dx << " dy " << dy << std::endl;
-    //             // std::cout << robot_theta*180.0/M_PI << " " << robot_x << " " << robot_y << " " << v_l  << " " << dx << " " << dy << std::endl;
-    //         }
-    // }
 }
 
 
@@ -1059,7 +1657,6 @@ void ReedsSheppClass::get_samples_S( const double target_angle_change, double  r
         roboty = roboty + dy;
         theta_change += linear_step_size_local;
         ClassReedSheppPath::posePerSample pose(robotx, roboty, robot_yaw);
-        // all_path_result[path_type].path_steps.push_back(pose);
         result_container.path_steps.push_back(pose);
     }
     robotx = init_x + target_angle_change*turning_raius_ * cos( robot_yaw );

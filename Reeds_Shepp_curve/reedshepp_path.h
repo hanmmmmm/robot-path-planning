@@ -43,7 +43,6 @@ public:
         pathResult RmSmRm;
         pathResult RmSmLm;
 
-
         pathResult RpLmRp;
         pathResult RmLpRm;
         pathResult RpLmRm;
@@ -71,8 +70,33 @@ public:
         pathResult RpLumRumLp;
         pathResult RmLupRupLm;
 
+        pathResult LpRm90SmRm;
+        pathResult LmRp90SpRp;
+        pathResult RpLm90SmLm;
+        pathResult RmLp90SpLp;
+
+        pathResult LpRm90SmLm;
+        pathResult LmRp90SpLp;
+        pathResult RpLm90SmRm;
+        pathResult RmLp90SpRp;
+
+        pathResult RpSpLp90Rm;
+        pathResult RmSmLm90Rp;
+        pathResult LpSpRp90Lm;
+        pathResult LmSmRm90Lp;
+
+        pathResult LpSpLp90Rm;
+        pathResult LmSmLm90Rp;
+        pathResult RpSpRp90Lm;
+        pathResult RmSmRm90Lp;
+
+        pathResult LpRm90SmLm90Rp;
+        pathResult LmRp90SpLp90Rm;
+        pathResult RpLm90SmRm90Lp;
+        pathResult RmLp90SpRp90Lm;
 
 
+        // std::vector<pathResult> res
 
         void reset(){
             LpSpLp.path_steps.clear();
@@ -146,11 +170,55 @@ public:
             RmLupRupLm.path_steps.clear();
             RmLupRupLm.valid = false;
 
+            LpRm90SmRm.path_steps.clear();
+            LpRm90SmRm.valid = false;
+            LmRp90SpRp.path_steps.clear();
+            LmRp90SpRp.valid = false;
+            RpLm90SmLm.path_steps.clear();
+            RpLm90SmLm.valid = false;
+            RmLp90SpLp.path_steps.clear();
+            RmLp90SpLp.valid = false;
+
+            LpRm90SmLm.path_steps.clear();
+            LpRm90SmLm.valid = false;
+            LmRp90SpLp.path_steps.clear();
+            LmRp90SpLp.valid = false;
+            RpLm90SmRm.path_steps.clear();
+            RpLm90SmRm.valid = false;
+            RmLp90SpRp.path_steps.clear();
+            RmLp90SpRp.valid = false;
+
+
+            RpSpLp90Rm.path_steps.clear();
+            RpSpLp90Rm.valid = false;
+            RmSmLm90Rp.path_steps.clear();
+            RmSmLm90Rp.valid = false;
+            LpSpRp90Lm.path_steps.clear();
+            LpSpRp90Lm.valid = false;
+            LmSmRm90Lp.path_steps.clear();
+            LmSmRm90Lp.valid = false;
+
+            LpSpLp90Rm.path_steps.clear();
+            LpSpLp90Rm.valid = false;
+            LmSmLm90Rp.path_steps.clear();
+            LmSmLm90Rp.valid = false;
+            RpSpRp90Lm.path_steps.clear();
+            RpSpRp90Lm.valid = false;
+            RmSmRm90Lp.path_steps.clear();
+            RmSmRm90Lp.valid = false;
+
+
+            LpRm90SmLm90Rp.path_steps.clear();
+            LpRm90SmLm90Rp.valid = false;
+            LmRp90SpLp90Rm.path_steps.clear();
+            LmRp90SpLp90Rm.valid = false;
+            RpLm90SmRm90Lp.path_steps.clear();
+            RpLm90SmRm90Lp.valid = false;
+            RmLp90SpRp90Lm.path_steps.clear();
+            RmLp90SpRp90Lm.valid = false;
 
         }
     };
-
-    void fake();
 
 };
 
@@ -160,10 +228,6 @@ ClassReedSheppPath::ClassReedSheppPath()
 
 ClassReedSheppPath::~ClassReedSheppPath()
 {
-}
-
-void ClassReedSheppPath::fake(){
-
 }
 
 

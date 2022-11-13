@@ -92,6 +92,26 @@ ClassRScurveOpencv::ClassRScurveOpencv()
     all_path_colors["RpLumRumLp"] = cv::Scalar(0,0,255);
     all_path_colors["RmLupRupLm"] = cv::Scalar(0,200,100);
 
+    all_path_colors["LpRm90SmRm"] = cv::Scalar(0,255,0);
+    all_path_colors["LmRp90SpRp"] = cv::Scalar(255,0,0);
+    all_path_colors["RpLm90SmLm"] = cv::Scalar(0,0,255);
+    all_path_colors["RmLp90SpLp"] = cv::Scalar(0,200,100);
+
+    all_path_colors["LpRm90SmLm"] = cv::Scalar(80,0,155);
+    all_path_colors["LmRp90SpLp"] = cv::Scalar(255,0,0);
+    all_path_colors["RpLm90SmRm"] = cv::Scalar(0,0,255);
+    all_path_colors["RmLp90SpRp"] = cv::Scalar(0,200,100);
+
+    all_path_colors["RpSpLp90Rm"] = cv::Scalar(206, 160, 247);
+    all_path_colors["RmSmLm90Rp"] = cv::Scalar(114, 176, 25);
+    all_path_colors["LpSpRp90Lm"] = cv::Scalar(207, 30, 52);
+    all_path_colors["LmSmRm90Lp"] = cv::Scalar(84, 152, 251);
+
+    all_path_colors["LpSpLp90Rm"] = cv::Scalar(147, 157, 48);
+    all_path_colors["LmSmLm90Rp"] = cv::Scalar(195, 26, 87);
+    all_path_colors["RpSpRp90Lm"] = cv::Scalar(25, 247, 39);
+    all_path_colors["RmSmRm90Lp"] = cv::Scalar(97, 249, 88);
+
 
 }
 

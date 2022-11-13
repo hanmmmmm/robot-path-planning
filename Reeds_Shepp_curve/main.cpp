@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <array>
 #include <random>
+#include <chrono>
 
 #include "reedsshepp.h"
 #include "reedshepp_path.h"
@@ -40,12 +41,24 @@ int main()
 
     while ( loop_count  < 50)
     {
+        start_pose[0]= 0.5 + (float(dist6(rng))-25.0)/10.0;
+        start_pose[1]= 0.5 + (float(dist6(rng))-25.0)/10.0;
+        start_pose[2] = dist6(rng);
+
         goal_pose[0] = start_pose[0] + (float(dist6(rng))-25.0)/10.0;
         goal_pose[1] = start_pose[1] + (float(dist6(rng))-25.0)/10.0;
         goal_pose[2] = dist6(rng);
 
+        auto rs_start_time =  std::chrono::high_resolution_clock::now();
+
         path_finder.setup( start_pose, goal_pose);
         path_finder.search();
+
+        auto rs_end_time =  std::chrono::high_resolution_clock::now();
+
+        int duration = std::chrono::duration_cast<std::chrono::microseconds>(rs_end_time - rs_start_time).count();
+
+        std::cout << "Time:  "  << duration << "  us" << std::endl;
 
         vis.init();
 
@@ -90,6 +103,31 @@ int main()
         vis.draw_path_by_cvline( path_finder.all_possible_paths_.LmRupLupRm );
         vis.draw_path_by_cvline( path_finder.all_possible_paths_.RpLumRumLp );
         vis.draw_path_by_cvline( path_finder.all_possible_paths_.RmLupRupLm );
+
+        vis.draw_path_by_cvline( path_finder.all_possible_paths_.LpRm90SmLm );
+        vis.draw_path_by_cvline( path_finder.all_possible_paths_.LmRp90SpLp );
+        vis.draw_path_by_cvline( path_finder.all_possible_paths_.RpLm90SmRm );
+        vis.draw_path_by_cvline( path_finder.all_possible_paths_.RmLp90SpRp );
+
+        vis.draw_path_by_cvline( path_finder.all_possible_paths_.LpRm90SmRm );
+        vis.draw_path_by_cvline( path_finder.all_possible_paths_.LmRp90SpRp );
+        vis.draw_path_by_cvline( path_finder.all_possible_paths_.RpLm90SmLm );
+        vis.draw_path_by_cvline( path_finder.all_possible_paths_.RmLp90SpLp );
+
+        vis.draw_path_by_cvline( path_finder.all_possible_paths_.LmSmRm90Lp );
+        vis.draw_path_by_cvline( path_finder.all_possible_paths_.LpSpRp90Lm );
+        vis.draw_path_by_cvline( path_finder.all_possible_paths_.RmSmLm90Rp );
+        vis.draw_path_by_cvline( path_finder.all_possible_paths_.RpSpLp90Rm );
+
+        vis.draw_path_by_cvline( path_finder.all_possible_paths_.RmSmRm90Lp );
+        vis.draw_path_by_cvline( path_finder.all_possible_paths_.RpSpRp90Lm );
+        vis.draw_path_by_cvline( path_finder.all_possible_paths_.LmSmLm90Rp );
+        vis.draw_path_by_cvline( path_finder.all_possible_paths_.LpSpLp90Rm );
+
+        vis.draw_path_by_cvline( path_finder.all_possible_paths_.LpRm90SmLm90Rp );
+        vis.draw_path_by_cvline( path_finder.all_possible_paths_.LmRp90SpLp90Rm );
+        vis.draw_path_by_cvline( path_finder.all_possible_paths_.RpLm90SmRm90Lp );
+        vis.draw_path_by_cvline( path_finder.all_possible_paths_.RmLp90SpRp90Lm );
 
 
         vis.show(manual);
