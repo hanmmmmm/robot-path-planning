@@ -9,7 +9,7 @@ Using only C++ standard libraries for algorithms, and OpenCV for visulization.
 </br></br>
 Methods in progress:
 - [ ] LPA*
-- [ ] Reeds-shepp
+- [+] Reeds-shepp (code done, need to make GIF)
 - [ ] Potential field
 
 </br>
