@@ -16,6 +16,19 @@
 
 #include "reedshepp_path.h"
 
+/*
+This is my implementation of Reeds-Sheep curve. 
+Most parts are following the paper. 
+One exceptation is that L+R+L+ L-R-L- R+L+R+ R-L-R- are also included;
+so here are 52=48+4 types of curves are being considered;
+And the CCC types are computed using Dubins Curve formula. 
+
+The result is a vector of my custom path type, defined in another header file. 
+Each 'path' contains the type-word, unitless length, sampled waypoints (x,y,yaw), valid (bool).
+Sorted in length increasing order. 
+*/
+
+
 class ReedsSheppClass
 {
 private:
@@ -235,13 +248,13 @@ void ReedsSheppClass::search(  )
     RpSpLp();
     RmSmLm();
 
-    LRL_base(  );
+    LRL_base(  ); // all C|C|C , C|CC, CC|C are copmuted together in these two functions; 
     RLR_base(  );
 
-    LpRupLumRm( );
-    LmRumLupRp( );
-    RpLupRumLm( );
-    RmLumRupLp( );
+    LpRupLumRm( ); // use (x,y,yaw)  orginal 
+    LmRumLupRp( ); // use (-x,y,-yaw) when m <=> p 
+    RpLupRumLm( ); // use (x,-y,-yaw) when R <=> L
+    RmLumRupLp( ); // use (-x,-y,yaw) when both of above happens 
 
     LpRumLumRp( );
     LmRupLupRm( );
