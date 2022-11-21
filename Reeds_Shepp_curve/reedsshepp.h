@@ -37,16 +37,18 @@ private:
     std::array<double, 3> goal_pose_ ;  // meters, rad
     std::array<double, 3> goal_pose_processed_ ;  // rotated and unitless 
 
+    double ccc_d_ ;
+    double ccc_alpha_ ;
+    double ccc_beta_ ;
+
+    bool check_collision_;
+
     double turning_raius_ = 0.5;  // meters
     
     double angular_step_size = 0.02;
     double linear_step_size = 0.05;
 
     double v_l ;
-
-    double ccc_d_ ;
-    double ccc_alpha_ ;
-    double ccc_beta_ ;
 
     void polar(double x, double y, double &radius_ro, double &theta);
 

@@ -8,11 +8,6 @@ find_package(OpenCV REQUIRED)
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
 
-# add_library(utillib utils/img_io.cpp)
-# add_library(dubins dubins.cpp)
-
-# include_directories( reedsshepp_func )
-
 add_executable(reedsshepp_path 
 main.cpp 
 )
