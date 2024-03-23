@@ -16,16 +16,16 @@ Methods in progress:
 
 
 # to-do
-update some of the gifs, since they were recorded with a very early version of code, which may casue non-optimal solution.
+update some of the GIFs, since they were recorded with a very early version of code, which may casue non-optimal solution.
 
-(The code has updated, but gifs need re-recording)
+(The code has been updated, but GIFs need re-recording)
 
 ----
 # Demos
 
 Each of the demo contains 5 samples played in sequence.
 
-They are using tasks with identical start/goal. 
+They are using tasks with identical start/goal position. 
 
 ----
 ### Breadth First Searching
@@ -68,6 +68,8 @@ The green line is the path during replanning; the new valid path is orange line.
 
 This sample is using Manhattan distance as h-cost. <br/>
 
+(I will update the GIF later)
+
 <a id="search" href="https://github.com/hanmmmmm/robot-path-planning/blob/main/A_star/astar.gif">
     <img src="https://github.com/hanmmmmm/robot-path-planning/blob/main/A_star/astar.gif" alt="BFS showcase gif" title="A-Star search" width="500"/>
 </a>
@@ -78,6 +80,8 @@ This sample is using Manhattan distance as h-cost. <br/>
 This sample is using Euclidean distance as the primary source of h-cost. <br/>
 Then modify the h-cost based on the motion direction, steer, and priximity to obstacle. </br>
 The g-cost is the same as A-star. </br>
+
+Both position and direction are considered.
 
 <a id="search" href="https://github.com/hanmmmmm/robot-path-planning/blob/main/hybrid_A_star/hybrid_a_star.gif">
     <img src="https://github.com/hanmmmmm/robot-path-planning/blob/main/hybrid_A_star/hybrid_a_star.gif" alt="Hybrid A-Star showcase gif" title="BFS search" width="500"/>
